@@ -1,0 +1,112 @@
+data
+├─ db.csv
+├─ tags.csv
+├─ tag_aliases.csv
+├─ tag_implications.csv
+├─ pools.csv
+├─ pool_edges.parquet
+├─ pool_entropy.parquet
+├─ pools_meta.parquet
+├─ tag_co_from_pools.parquet
+├─ tag_pmi.parquet
+├─ tags.parquet
+├─ tags_dict.parquet
+├─ pools_parquet
+│   ├─ _SUCCESS
+│   ├─ pool_shard=0
+│   │   └─ 8d4a8b08e03f40e489d7c41394e4226c-0.parquet
+│   ├─ ...
+│   └─ pool_shard=51
+│       └─ 8d4a8b08e03f40e489d7c41394e4226c-0.parquet
+├── features
+│   ├── tag2vec.parquet
+│   ├── tag2vec_knn.parquet
+│   └── tag2vec_meta.json
+├─ topk
+│   ├─ _SUCCESS
+│   ├─ index_0000.bin
+│   ├─ ...
+│   ├─ index_0255.bin
+│   ├─ shard_0000.topkpack
+│   ├─ ...
+│   └─ shard_0255.topkpack
+├─ bitmaps
+│   ├─ _SUCCESS
+│   ├─ index_0000.bin
+│   ├─ ...
+│   ├─ index_0255.bin
+│   ├─ shard_0000.roarpack
+│   ├─ ...
+│   └─ shard_0255.roarpack
+├─ mmaps
+│   ├─ _SUCCESS
+│   ├─ epoch_day.bin
+│   ├─ fav_count.bin
+│   ├─ h.bin
+│   ├─ is_deleted.bin
+│   ├─ is_pending.bin
+│   ├─ post_ids.bin
+│   ├─ post_in_pools_count.bin
+│   ├─ rating_e.roar
+│   ├─ rating_q.roar
+│   ├─ rating_s.roar
+│   ├─ score.bin
+│   └─ w.bin
+├─ post_tags_parquet
+│   ├─ _SUCCESS
+│   ├─ tag_shard=0
+│   │   └─ data.parquet
+│   ├─ ...
+│   │   └─ data.parquet
+│   └─ tag_shard=255
+│       └─ data.parquet
+└─ posts_parquet
+   ├─ _SUCCESS
+   ├─ rating=e
+   │   ├─ year=2007
+   │   │   ├─ month=01
+   │   │   │   └─ data_0.parquet
+   │   │   ├─ ...
+   │   │   └─ month=12
+   │   │       ├─ data_0.parquet
+   │   │       ├─ ...
+   │   │       └─ data_3.parquet
+   │   ├─ ...
+   │   └─ year=2025
+   │       ├─ month=01
+   │       │   └─ data_0.parquet
+   │       ├─ ...
+   │       └─ month=12
+   │           └─ data_0.parquet
+   ├─ rating=q
+   │   ├─ year=2007
+   │   │   ├─ month=01
+   │   │   │   └─ data_0.parquet
+   │   │   ├─ ...
+   │   │   └─ month=12
+   │   │       └─ data_0.parquet
+   │   ├─ ...
+   │   └─ year=2025
+   │       ├─ month=01
+   │       │   └─ data_0.parquet
+   │       ├─ ...
+   │       └─ month=12
+   │           └─ data_0.parquet
+   └─ rating=s
+       ├─ year=2007
+       │   ├─ month=01
+       │   │   ├─ data_0.parquet
+       │   │   ├─ ...
+       │   │   └─ data_3.parquet
+       │   ├─ ...
+       │   └─ month=12
+       │       └─ data_0.parquet
+       ├─ ...
+       └─ year=2025
+           ├─ month=01
+           │   └─ data_0.parquet
+           ├─ ...
+           └─ month=12
+               └─ data_0.parquet
+
+1050 directories, 2261 files

@@ -26,14 +26,15 @@
 !/autotest/autotest_tag2vec.py
 !/autotest/run_autotest_tag2vec.bat
 
-/data/*
-*.parquet
-*.roar
-*.roarpack
-*.bin
-*.topk
-*.topkpack
-*.json
-*.csv
+!/data/
 !/data/data_file_tree.txt
 !/data/overview_of_databases.txt
+
+/data/*.parquet
+/data/*.roar
+/data/*.roarpack
+/data/*.bin
+/data/*.topk
+/data/*.topkpack
+/data/*.json
+/data/*.csv

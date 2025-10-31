@@ -1,0 +1,76 @@
+ALL DATABASES ARE STORED IN /data
+
+Database: "db.csv" (6 million rows, 5 GB). # It can be updated; it’s advisable to consider integrating new data to avoid a complete recalculation.
+Colums:
+0. id (integer), # post id. Interconnected with db.csv/approver_id, pools.csv/post_ids, user_favorites.csv/favorites.
+1. uploader_id (integer), # Previously, it was believed that this was the author, but no, it is the uploader. The uploader may have their own tastes, so we can use the posts they create as an alternative "favorites" list
+2. created_at (string "yyyy-mm-dd hh:mm:ss.ms"),
+3. md5 (string),
+4. source (string "URL" or other, is sometimes empty),
+5. rating (string "s", "q" or "e"),
+6. image_width (integer),
+7. image_height (integer),
+8. tag_string (string "tag tag tag"), # All tags are included, categories are marked in tags.csv (with the author)
+9. locked_tags (string "tag tag tag", is sometimes empty),
+10. fav_count (integer),
+11. file_ext (string "png", "webm" etc),
+12. parent_id (integer, is sometimes empty),
+13. change_seq (integer),
+14. approver_id (integer, is sometimes empty), # Interconnected with db.csv/id, pools.csv/post_ids, user_favorites.csv/favorites.
+15. file_size (integer bytes),
+16. comment_count (integer),
+17. description (string, is sometimes empty),
+18. duration (integer "s.ms", is sometimes empty),
+19. updated_at (string "yyyy-mm-dd hh:mm:ss.ms", is sometimes empty),
+20. is_deleted (string "f" or "t"),
+21. is_pending (string "f" or "t"),
+22. is_flagged (string "f" or "t"),
+23. score (integer), # is the pre-calculated sum of the down_score + up_score
+24. up_score (integer),
+25. down_score (integer),
+26. is_rating_locked (string "f" or "t"),
+27. is_status_locked (string "f" or "t"),
+28. is_note_locked (string "f" or "t")
+
+Database: "tags.csv" (1.5 million rows, 37 MB) # Assigns a category to tags (int)
+Colums:
+0. id (integer), # tags ID
+1. name (string "tag"),
+2. category (integer),
+3. post_count (integer),
+# note: It is worth clarifying that the "category" can be from 0 to 8. 0 - General, 1 - Artist, 2 - Contributor (useless), 3 - Copyright, 4 - Character, 5 - Species, 6 - Invalid (useless), 7 - Meta, 8 - Lore (useless).
+
+Database: "tag_implications.csv" (70 thousand rows, 4 MB) # antecedent-consequent = is-a (example "eagle" - "bird", "car" - "vehicle", "licking" - "tongue", "laptop" - "computer"). On the site, this is for the uploader: he adds 1 tag to the post, the system inserts the related ones.
+Colums:
+0. id (integer), # tag_implications ID
+1. antecedent_name (string "tag"),
+2. consequent_name (string "tag"),
+3. created_at (string "yyyy-mm-dd hh:mm:ss.ms", is sometimes empty),
+4. status (string "active", "deleted", "error...", "pending" or "processing"),
+# note: We, with some nuances, can use this as "synonyms" or "groups" in a certain direction(?)
+
+Database: "tag_aliases.csv" (70 thousand rows, 5 MB) # antecedent-consequent = a-is (example "girl" - "female", "arctic_owl - snowy_owl", "phone" - "electronics", "rick_and_morty" - "adult_swim"). Describes synonym or alias relationships between tags, where the antecedent_name tag should be replaced by the canonical consequent_name tag. On the site, this is for the user: he is searching for 1 tag, the system **understands** the related ones.
+0. id (integer), # tag_aliases ID
+1. antecedent_name (string "tag"),
+2. consequent_name (string "tag"),
+3. created_at (string "yyyy-mm-dd hh:mm:ss.ms", is sometimes empty),
+4. status (string "active", "deleted" or "pending")
+# note: We, with some nuances, can use this as "synonyms" or "groups" in a certain direction(?)
+
+Database: "pools.csv" (50 thousand rows, 14 MB)
+0. id (int) # pool id
+1. name (string) # Example "my_pool"
+2. created_at (string "yyyy-mm-dd hh:mm:ss.ms")
+3. updated_at (string "yyyy-mm-dd hh:mm:ss.ms")
+4. creator_id (int) # interconnected with db.csv/uploader_id, db.csv/approver_id, user_favorites.csv/user_id
+5. description (string, is sometimes empty) # Example "who is there" (it can be a anything from the creator - useless)
+6. is_active (string "f" or "t")
+7. category (string, "collection" or "series") # Sets on some topic. Series has an order (for example, a comic book), the collection is simply united by something.
+8. post_ids (string, "{id,id,id}") # can be "{}" - empty. Interconnected with db.csv/id, user_favorites.csv/favorites.
+# note: Can be used as a co-occurrence source. Embed in PMI, tag2vec, feature “related by pool”. Warning: The data is either sparse or has too low entropy (comic, redraw, challenge). Not enough data.
+
+Database: "user_favorites.csv" (~20 thousand rows, ~15 MB) # Will be updated over time (because slow api), but some volume is already available
+1. user_id (int) # interconnected with db.csv/uploader_id, db.csv/approver_id, pools.csv/creator_id
+2. favorite_count (int)
+3. favorites (string "{id,id,id}") # interconnected with db.csv/id, pools.csv/post_ids. 
+# note: favorite_count can reach 5000, from which favorites can be sparse. Solution - vectors(?) 
