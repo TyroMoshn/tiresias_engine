@@ -16,7 +16,7 @@ def newer_than(out: Path, *ins: Path) -> bool:
     out_m = out.stat().st_mtime
     return all(out_m >= i.stat().st_mtime for i in ins if i and i.exists())
 
-# ---- varint / delta (для Top-K) ----
+# ---- varint / delta (for Top-K) ----
 def encode_varint(n: int) -> bytes:
     out = bytearray()
     while True:

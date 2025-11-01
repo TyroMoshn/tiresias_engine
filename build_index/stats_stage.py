@@ -12,23 +12,23 @@ from tqdm import tqdm
 from .config import Config
 from .utils import newer_than, ensure_dir, log, encode_varint_delta
 
-import scipy.sparse as sp  # SciPy 1.16.3
+import scipy.sparse as sp
 
 def step_tag_stats(cfg: Config) -> None:
     dict_src = cfg.root / "tags_dict.parquet"
     out = cfg.tags_parquet
     if out.exists() and not cfg.force and newer_than(out, dict_src, cfg.posts_parquet / "_SUCCESS"):
-        log("[stats] уже актуально — пропуск")
+        log("[stats] already fresh - skip")
         return
 
-    log("[stats] считаем idf(pop_count-сглаж.) и популярность…")
+    log("[stats] calculate idf(pop_count-smooth.) and popularity...")
     posts_lf = pl.scan_parquet(f"{cfg.posts_parquet.as_posix()}/**/*.parquet")
     if cfg.reliable_only:
         posts_lf = posts_lf.filter(~pl.col("is_deleted") & ~pl.col("is_pending"))
     posts = posts_lf.select(["id", "score", "fav_count"]).collect(engine="streaming")
     n_posts = posts.height
 
-    tag_dict = pl.read_parquet(dict_src)  # tag_id, tag, category, post_count
+    tag_dict = pl.read_parquet(dict_src)
 
     long = pl.scan_parquet(f"{cfg.post_tags_parquet.as_posix()}/**/*.parquet")
     joined = long.join(posts.lazy(), left_on="post_id", right_on="id", how="inner")
@@ -74,28 +74,20 @@ def step_tag_stats(cfg: Config) -> None:
             corr = float(np.corrcoef(np.log1p(a), np.log1p(b))[0, 1])
             log(f"[stats] corr(log post_count, log df_local) ≈ {corr:.4f}")
     except Exception as e:
-        log(f"[stats] валидация не удалась: {e}")
+        log(f"[stats] validation failed: {e}")
 
-    log("[stats] готово")
+    log("[stats] done")
 
 def step_pmi(cfg: Config) -> None:
-    """
-    Быстрый PMI (tag–tag co-occurrence in posts) без Python-циклов:
-      1) По каждому посту берём top-M тегов (как и раньше).
-      2) Строим разреженную матрицу X (rows=post, cols=tag) с 0/1.
-      3) Считаем C = X.T @ X (co-occurrences) в C-коде SciPy.
-      4) Фильтруем по support и считаем PMI векторно.
-    """
     out = cfg.root / "tag_pmi.parquet"
     if out.exists() and not cfg.force and newer_than(out, cfg.post_tags_parquet / "_SUCCESS"):
-        log("[pmi] уже актуально — пропуск")
+        log("[pmi] already fresh - skip")
         return
 
-    log("[pmi] считаем ко-встречаемости (SciPy sparse X.T@X, без Python-циклов)…")
+    log("[pmi] calculate co-occurrence")
     long = pl.scan_parquet(f"{cfg.post_tags_parquet.as_posix()}/**/*.parquet")
     tags_meta = pl.read_parquet(cfg.root / "tags_dict.parquet").select([pl.col("tag_id"), pl.col("post_count")])
 
-    # top-M тегов на пост (как было)
     ln = long.join(tags_meta.lazy(), on="tag_id", how="left")
     top_m = (ln.group_by("post_id")
                .agg(pl.col("tag_id").sort_by(pl.col("post_count"), descending=False).head(cfg.pmi_top_m_per_post))
@@ -103,26 +95,22 @@ def step_pmi(cfg: Config) -> None:
 
     if top_m.is_empty():
         pl.DataFrame({"a": [], "b": [], "support": [], "pmi": []}).write_parquet(out, compression="zstd")
-        log("[pmi] пусто — сохранили пустой parquet")
+        log("[pmi] empty - saved empty parquet")
         return
 
-    # Компактная перенумерация тегов, чтобы матрица была T ~ |unique(top-M)|
     uniq_tags = (top_m
         .select(pl.col("tag_id").explode().alias("tag_id"))
         .unique()
         .with_row_count("tid"))  # tid: 0..T-1
 
-    # Разворачиваем (post,row_id) × (tag,tid)
-    # row_id — индекс строки X (0..N-1)
     long_rows = (top_m
-        .with_row_count("row_id")           # row_id ~ индекс поста в X
+        .with_row_count("row_id")
         .select(["row_id", "tag_id"])
         .explode("tag_id")
         .drop_nulls()
-        .join(uniq_tags, on="tag_id", how="inner")   # → row_id, tag_id, tid
+        .join(uniq_tags, on="tag_id", how="inner")   # -> row_id, tag_id, tid
         .select(["row_id", "tid"]))
 
-    # Строим разреженную X (N×T), dtype маленький, т.к. значения 0/1
     N = int(top_m.height)
     T = int(uniq_tags.height)
     r = long_rows.get_column("row_id").to_numpy().astype(np.int64, copy=False)
@@ -130,18 +118,13 @@ def step_pmi(cfg: Config) -> None:
     data = np.ones_like(r, dtype=np.uint8)
     X = sp.csr_matrix((data, (r, c)), shape=(N, T), dtype=np.uint8)
 
-    # Счётчики появления тегов (для p(t))
     tag_cnt = np.asarray(X.sum(axis=0)).ravel().astype(np.int64)  # shape (T,)
 
-    # Матрица co-occurrence: C = X.T @ X (T×T, симм.). Диагональ = df(tag)
-    # Важно: работаем целиком — SciPy делает всё в C/С++.
     C = (X.T @ X).tocsr()
-    # Нулим диагональ и выбрасываем нули (чтобы меньше nnz)
     C.setdiag(0)
     C.eliminate_zeros()
 
     coo = C.tocoo()
-    # берём только верхний треугольник
     mask = coo.row < coo.col
     if int(cfg.pmi_support) > 1:
         mask &= (coo.data >= int(cfg.pmi_support))
@@ -152,17 +135,15 @@ def step_pmi(cfg: Config) -> None:
 
     if ai.size == 0:
         pl.DataFrame({"a": [], "b": [], "support": [], "pmi": []}).write_parquet(out, compression="zstd")
-        log("[pmi] после порога support пар нет — сохранили пустой parquet")
+        log("[pmi] There are no pairs after the support threshold - the empty parquet was saved")
         return
 
-    # Векторно считаем PMI
     Nf = float(N)
     pa = tag_cnt[ai] / Nf
     pb = tag_cnt[bi] / Nf
     pab = supp.astype(np.float64) / Nf
     pmi = np.log((pab + 1e-12) / (pa * pb + 1e-12)).astype(np.float32, copy=False)
 
-    # Возвращаемся от tid → исходные tag_id
     tid2tag = uniq_tags.sort("tid").get_column("tag_id").to_numpy()
     a_ids = tid2tag[ai].astype(np.int32, copy=False)
     b_ids = tid2tag[bi].astype(np.int32, copy=False)
@@ -171,7 +152,7 @@ def step_pmi(cfg: Config) -> None:
         {"a": a_ids, "b": b_ids, "support": supp, "pmi": pmi}
     ).write_parquet(out, compression="zstd")
 
-    log(f"[pmi] готово: {ai.size:,} пар (N={N:,}, T={T:,}, nnz={C.nnz:,})")
+    log(f"[pmi] ready: {ai.size:,} pairs (N={N:,}, T={T:,}, nnz={C.nnz:,})")
 
 def step_topk(cfg: Config) -> None:
     from collections import defaultdict
@@ -179,10 +160,10 @@ def step_topk(cfg: Config) -> None:
     ensure_dir(cfg.topk_dir)
     sentinel = cfg.topk_dir / "_SUCCESS"
     if sentinel.exists() and not cfg.force and newer_than(sentinel, cfg.posts_parquet / "_SUCCESS", cfg.post_tags_parquet / "_SUCCESS"):
-        log("[topk] уже актуально — пропуск")
+        log("[topk] already fresh - skip")
         return
 
-    log("[topk] вычисляем топ-K постов по тегам…")
+    log("[topk] Calculate the top-K posts by tags...")
     posts_lf = pl.scan_parquet(f"{cfg.posts_parquet.as_posix()}/**/*.parquet")
     if cfg.reliable_only:
         posts_lf = posts_lf.filter(~pl.col("is_deleted") & ~pl.col("is_pending"))
@@ -211,11 +192,9 @@ def step_topk(cfg: Config) -> None:
                     .with_columns(pl.row_number().over("tag_id").alias("rn")))
         topk_rows = with_k.filter(pl.col("rn") < pl.col("k")).collect(engine="streaming")
 
-    # определим число шардов по структуре post_tags_parquet (если есть tag_shard=*), иначе 1
     shard_dirs = sorted(p for p in cfg.post_tags_parquet.glob("tag_shard=*") if p.is_dir())
     tag_shards = len(shard_dirs) if shard_dirs else 1
     
-    # ленивые писатели по шардам
     packs: Dict[int, "io.BufferedWriter"] = {}
     idxs: Dict[int, "io.BufferedWriter"] = {}
     offsets: Dict[int, int] = {}
@@ -229,7 +208,6 @@ def step_topk(cfg: Config) -> None:
             offsets[shard] = 0
         return packs[shard], idxs[shard]
     
-    # гарантируем порядок по tag_id, чтобы можно было стримить без буфера всех тегов
     rows = topk_rows.select(["tag_id", "post_id"]).sort("tag_id")
     
     cur_tag: int | None = None
@@ -238,7 +216,6 @@ def step_topk(cfg: Config) -> None:
     def _flush_current():
         if cur_tag is None or not acc:
             return
-        # кодируем и пишем в pack соответствующего шарда
         shard = cur_tag % tag_shards
         pack, ix = _get_writers(shard)
         arr = np.array(acc, dtype=np.int64); arr.sort()
@@ -258,12 +235,10 @@ def step_topk(cfg: Config) -> None:
         else:
             acc.append(post_id)
     
-    # последний тег
     _flush_current()
     
-    # закрываем файловые дескрипторы
     for f in packs.values(): f.close()
     for f in idxs.values(): f.close()
     
     sentinel.write_text("ok")
-    log("[topk] готово (pack)")
+    log("[topk] done (pack)")

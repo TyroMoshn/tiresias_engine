@@ -19,6 +19,9 @@ data
 │   └─ pool_shard=51
 │       └─ 8d4a8b08e03f40e489d7c41394e4226c-0.parquet
 ├── features
+│   ├── post2vec.parquet
+│   ├── post2vec_faiss.index
+│   ├── post2vec_faiss_ids.parquet
 │   ├── tag2vec.parquet
 │   ├── tag2vec_knn.parquet
 │   └── tag2vec_meta.json

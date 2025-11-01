@@ -1,4 +1,6 @@
 @echo off
+call conda init
+call conda activate myenv
 setlocal ENABLEDELAYEDEXPANSION
 REM TIRESIAS_ENGINE / Autotest launcher
 
@@ -6,7 +8,7 @@ REM Root folder of the project (adjust if needed)
 set ROOT=I:\\TIRESIAS_ENGINE
 set DATA=%ROOT%\\data
 set BUILD=%ROOT%\\build_index
-set TESTS=%ROOT%\\autotest
+set TESTS=%BUILD%\\autotest
 
 REM Ensure UTF-8 in console
 set PYTHONUTF8=1

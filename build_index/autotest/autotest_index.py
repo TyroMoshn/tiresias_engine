@@ -328,7 +328,6 @@ def check_post_tags_schema(env: Env) -> CheckResult:
             problems.append(f"{shard.name}: tag_id dtype {sch.get('tag_id')} (expected Int32/Int64)")
         # no duplicates within file
         if not env.quick:
-            # более явная, совместимая версия:
             total = df.height
             unique_pairs = df.unique(subset=["post_id", "tag_id"]).height
             dup = total - unique_pairs
@@ -878,7 +877,7 @@ def perf_profile(env: Env) -> CheckResult:
         t = time.perf_counter()
         cnt = pl.scan_parquet(f"{pt.as_posix()}/**/*.parquet").select(pl.len()).collect(streaming=True)[0,0]
         t_cnt = time.perf_counter() - t
-        details.append(f"post_tags_parquet: COUNT(*) in {t_cnt:.2f} s → {int(cnt):,} rows")
+        details.append(f"post_tags_parquet: COUNT(*) in {t_cnt:.2f} s -> {int(cnt):,} rows")
 
     dur = time.perf_counter() - t0
     return CheckResult("Performance snapshot", "PASS", details, dur)

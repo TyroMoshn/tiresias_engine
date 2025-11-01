@@ -39,15 +39,15 @@ def step_build_bitmaps(cfg: Config) -> None:
     ensure_dir(cfg.bitmaps_dir)
     sentinel = cfg.bitmaps_dir / "_SUCCESS"
     if sentinel.exists() and not cfg.force and newer_than(sentinel, cfg.post_tags_parquet / "_SUCCESS"):
-        log("[bitmaps] уже актуально — пропуск")
+        log("[bitmaps] already fresh - skip")
         return
 
-    log("[bitmaps] строим roaring-индексы…")
+    log("[bitmaps] building roaring-indexes")
     shard_dirs = sorted(p for p in cfg.post_tags_parquet.glob("tag_shard=*") if p.is_dir())
     legacy_tag_dirs = sorted(p for p in cfg.post_tags_parquet.glob("tag_id=*") if p.is_dir())
 
     if shard_dirs:
-        # Современный режим: tag_shard=*
+        # New mode: tag_shard=*
         def process_shard(shard_dir: Path) -> int:
             tbl = pl.scan_parquet(f"{shard_dir.as_posix()}/**/*.parquet").select(["post_id","tag_id"]).collect()
             if tbl.is_empty():
@@ -72,7 +72,7 @@ def step_build_bitmaps(cfg: Config) -> None:
             list(tqdm(ex.map(process_shard, shard_dirs), total=len(shard_dirs)))
 
     else:
-        # Legacy-режим: старые tag_id=*
+        # Legacy-mode: old tag_id=*
         tag_parts = legacy_tag_dirs
 
         def process_part(part_dir: Path) -> tuple[int, np.ndarray]:
@@ -89,7 +89,7 @@ def step_build_bitmaps(cfg: Config) -> None:
                 acc.append((tag_id, ids))
 
         acc.sort(key=lambda t: t[0])
-        shard = cfg.roar_shard_size if cfg.roar_shard_size > 0 else 10000  # подстраховка
+        shard = cfg.roar_shard_size if cfg.roar_shard_size > 0 else 10000
         for i in tqdm(range(0, len(acc), shard), desc="shard"):
             chunk = acc[i:i+shard]
             if not chunk:
@@ -101,17 +101,17 @@ def step_build_bitmaps(cfg: Config) -> None:
             _write_roar_shard(out_pack, out_index, pairs)
 
     sentinel.write_text("ok")
-    log("[bitmaps] готово")
+    log("[bitmaps] done")
 
 def step_build_mmaps(cfg: Config) -> None:
     meta_dir = cfg.root / "mmaps"
     ensure_dir(meta_dir)
     sentinel = meta_dir / "_SUCCESS"
     if sentinel.exists() and not cfg.force and newer_than(sentinel, cfg.posts_parquet / "_SUCCESS"):
-        log("[mmaps] уже актуально — пропуск")
+        log("[mmaps] already fresh - skip")
         return
 
-    log("[mmaps] собираем компактные столбцы…")
+    log("[mmaps] collect compact columns...")
     scan = pl.scan_parquet(f"{cfg.posts_parquet.as_posix()}/**/*.parquet", hive_partitioning=True)
     try:
         df = scan.select([
@@ -169,4 +169,4 @@ def step_build_mmaps(cfg: Config) -> None:
     dump_memmap("is_pending", df.get_column("is_pending").cast(pl.UInt8).to_numpy(), np.uint8)
 
     sentinel.write_text("ok")
-    log(f"[mmaps] готово: {n} постов (post_ids отсортированы)")
+    log(f"[mmaps] done: {n} posts (post_ids sorted)")

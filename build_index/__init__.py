@@ -1,7 +1,7 @@
 # build_index/__init__.py
 """
-build_index — офлайн-конвейер подготовки данных:
-CSV→Parquet, теги/алиасы/импликации, биты/меммапы, статистика, PMI, Top-K.
+build_index - offline data preparation pipeline:
+CSV -> Parquet, tags/aliases/implications, bitmap/memmap, statistic, PMI, Top-K.
 """
 from .config import Config
 from .io_stage import step_parquet

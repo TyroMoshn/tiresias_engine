@@ -4,7 +4,7 @@ call conda activate myenv
 cd /d I:\TIRESIAS_ENGINE
 python -m build_index.main ^
 	--root I:\TIRESIAS_ENGINE\data ^
-	--do tags post_tags parquet stats pmi pools mmaps bitmaps topk pools_entropy pools_tag_co tag2vec ^
+	--do tags post_tags parquet stats pmi pools mmaps bitmaps topk pools_entropy pools_tag_co tag2vec post2vec ^
 	--workers 8 ^
 	--pool-min-size 3 ^
 	--pool-max-size 200 ^

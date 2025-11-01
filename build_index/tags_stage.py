@@ -129,26 +129,24 @@ def step_tags_and_post_tags(cfg: Config) -> None:
     sentinel = cfg.post_tags_parquet / "_SUCCESS"
     if sentinel.exists() and tags_out.exists() and not cfg.force and \
        newer_than(sentinel, cfg.posts_parquet / "_SUCCESS", cfg.tags_csv, cfg.tag_aliases_csv):
-        log("[tags] уже актуально — пропуск")
+        log("[tags] already fresh - skip")
         return
 
-    log("[tags] читаем tags.csv и алиасы…")
+    log("[tags] read tags.csv and aliases...")
     tags_df = _read_tags_csv(cfg.tags_csv)  # id, name, category, post_count
     aliases_df = _read_aliases_csv(cfg.tag_aliases_csv)
     alias_map = build_alias_map(tags_df, aliases_df)
-    log(f"[tags] активных алиасов: {len(alias_map):,}")
+    log(f"[tags] active aliases: {len(alias_map):,}")
 
-    # Чистим выходной каталог (во избежание миллионов мелких файлов от прошлых прогонов)
     if cfg.post_tags_parquet.exists():
         shutil.rmtree(cfg.post_tags_parquet, ignore_errors=True)
     ensure_dir(cfg.post_tags_parquet)
 
-    # компактный lookup тегов (маленькая табличка в памяти)
     tags_lookup = tags_df.rename({"name": "tag"}).select([
         "tag", pl.col("id").alias("tag_id"), "category", "post_count"
     ])
 
-    # фабрика ParquetWriter-ов: один writer на шард → один файл на шард
+    # ParquetWriter factory
     writers: Dict[int, pq.ParquetWriter] = {}
     writer_schema = pa.schema([("post_id", pa.int64()), ("tag_id", pa.int32())])
 
@@ -169,17 +167,15 @@ def step_tags_and_post_tags(cfg: Config) -> None:
 
     used_tag_ids: set[int] = set()
 
-    # обрабатываем пост-паркет-файлы по одному (память под контролем)
     files = sorted(Path(cfg.posts_parquet).rglob("*.parquet"))
-    log(f"[tags] обработаем parquet-файлов: {len(files):,}")
+    log(f"[tags] Processing parquet files: {len(files):,}")
 
     for i, f in enumerate(files, 1):
-        # читаем только нужные колонки
         df = pl.read_parquet(f, columns=["id", "tag_string", "is_deleted", "is_pending"])
         if cfg.reliable_only:
             df = df.filter(~pl.col("is_deleted") & ~pl.col("is_pending"))
         if df.is_empty():
-            if i % 100 == 0: log(f"[tags] прогресс: {i}/{len(files)} (пусто)")
+            if i % 100 == 0: log(f"[tags] progress: {i}/{len(files)} (empty)")
             continue
 
         # explode tag_string -> tag
@@ -191,34 +187,33 @@ def step_tags_and_post_tags(cfg: Config) -> None:
               .rename({"tags": "tag"})
               .drop_nulls()
         )
-        # алиасы
+        # aliases
         if alias_map:
             long_names = long_names.with_columns(pl.col("tag").replace(alias_map).alias("tag"))
 
-        # внутри чанка удаляем дубли post_id,tag
+        # Inside the chunk, remove duplicate post_id and tag entries.
         long_names = long_names.unique(subset=["post_id", "tag"])
 
-        # join с маленьким словарём → tag_id
+        # join with a small dictionary -> tag_id
         joined = (long_names
                   .join(tags_lookup, on="tag", how="left")
                   .drop_nulls(subset=["tag_id"])
                   .select([pl.col("post_id").cast(pl.Int64),
                            pl.col("tag_id").cast(pl.Int32)]))
         if joined.is_empty():
-            if i % 100 == 0: log(f"[tags] прогресс: {i}/{len(files)} (после join пусто)")
+            if i % 100 == 0: log(f"[tags] progress: {i}/{len(files)} (after join empty)")
             continue
 
         used_tag_ids.update(int(x) for x in joined.get_column("tag_id").to_list())
 
-        # считаем шард как модуль (равномерный баланс и фиксированное кол-во файлов)
+        # consider the shard as a module (uniform balance and fixed number of files)
         joined = joined.with_columns((pl.col("tag_id") % cfg.tag_shards).alias("tag_shard"))
 
-        # разбиваем по shard в этом чанке и дописываем в соответствующий файл
+        # break it down by shard in this chunk and add it to the corresponding file
         for shard_val, subdf in joined.group_by("tag_shard", maintain_order=True):
             shard = int(shard_val[0] if isinstance(shard_val, tuple) else shard_val)
-            # на диск пишем только колонки post_id, tag_id (без shard)
+            # post_id, tag_id (without shard)
             tbl = subdf.select(["post_id", "tag_id"]).to_arrow()
-            # дробим на крупные row-group’ы (для чтения быстрее)
             if cfg.parquet_row_group_rows and len(tbl) > cfg.parquet_row_group_rows:
                 start = 0
                 rgs = cfg.parquet_row_group_rows
@@ -231,13 +226,11 @@ def step_tags_and_post_tags(cfg: Config) -> None:
                 w.write_table(tbl)
 
         if i % 100 == 0 or i == len(files):
-            log(f"[tags] прогресс: {i}/{len(files)}")
+            log(f"[tags] progress: {i}/{len(files)}")
 
-    # закрываем все открытые файлы
     for w in writers.values():
         w.close()
 
-    # словарь реально встреченных тегов
     if used_tag_ids:
         dict_df = (tags_df
                    .filter(pl.col("id").is_in(list(used_tag_ids)))
@@ -248,7 +241,7 @@ def step_tags_and_post_tags(cfg: Config) -> None:
           .write_parquet(tags_out, compression="zstd")
 
     (cfg.post_tags_parquet / "_SUCCESS").write_text("ok")
-    log(f"[tags] готово: в индексе {len(used_tag_ids):,} тегов; партиций={cfg.tag_shards}, по файлу на партицию")
+    log(f"[tags] done: in index {len(used_tag_ids):,} tags; partitions={cfg.tag_shards}, per file per partition")
 
 # ---------- step: implications ----------
 def step_implications(cfg: Config) -> None:
@@ -256,7 +249,7 @@ def step_implications(cfg: Config) -> None:
     out_cache = cfg.root / "tag_ancestors_cache.parquet"
     if out_edges.exists() and out_cache.exists() and not cfg.force and \
        newer_than(out_edges, cfg.tag_implications_csv, cfg.tag_aliases_csv, cfg.tags_csv):
-        log("[impl] уже актуально — пропуск")
+        log("[impl] already fresh - skip")
         return
 
     tags_df = _read_tags_csv(cfg.tags_csv)
@@ -305,9 +298,9 @@ def step_implications(cfg: Config) -> None:
         pl.col("b").replace(name2id).alias("b_id"),
     ]).drop(["a","b"]).drop_nulls())
     dag.write_parquet(out_edges, compression="zstd")
-    log(f"[impl] рёбер в DAG: {dag.height:,}")
+    log(f"[impl] ribs in DAG: {dag.height:,}")
 
-    # кэш предков для топ-тегов по post_count
+    # ancestor cache for top tags by post_count
     depth = max(1, int(cfg.anc_cache_depth))
     top_percent = min(1.0, max(0.0, cfg.anc_cache_top_percent))
     used = set(dag.select(["a_id","b_id"]).to_series(0).to_list()
@@ -338,9 +331,9 @@ def step_implications(cfg: Config) -> None:
     if pairs:
         pl.DataFrame(pairs, schema={"tag_id": pl.Int32, "ancestor_id": pl.Int32, "depth": pl.Int8})\
           .write_parquet(out_cache, compression="zstd")
-        log(f"[impl] кэш предков записан: {len(pairs):,} пар")
+        log(f"[impl] ancestral cache written: {len(pairs):,} pairs")
     else:
         ensure_dir(out_cache.parent)
         pl.DataFrame({"tag_id": [], "ancestor_id": [], "depth": []})\
           .write_parquet(out_cache, compression="zstd")
-        log("[impl] кэш предков пуст")
+        log("[impl] ancestral cache empty")

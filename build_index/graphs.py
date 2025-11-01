@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Dict, List, Set
 
 def tarjan_scc(nodes: List[str], edges: Dict[str, List[str]]) -> List[List[str]]:
-    """SCC Tarjan на строковых вершинах."""
+    """SCC Tarjan at the string vertices."""
     import sys
     index = 0
     stack: List[str] = []

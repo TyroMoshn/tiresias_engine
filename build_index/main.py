@@ -9,6 +9,7 @@ from .tags_stage import step_tags_and_post_tags, step_implications
 from .index_stage import step_build_bitmaps, step_build_mmaps
 from .stats_stage import step_tag_stats, step_pmi, step_topk
 from .tag2vec_stage import step_tag2vec
+from .post2vec_stage import step_post2vec
 
 from .pools_stage import (
     step_pools_parse, step_pools_entropy, step_pool_edges,
@@ -16,17 +17,17 @@ from .pools_stage import (
 )
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Конвертация и препроцессинг БД")
-    p.add_argument('--root', type=Path, required=True, help='Корень data/')
-    p.add_argument('--csv', type=Path, default=None, help='Путь к db.csv (если не data/db.csv)')
-    p.add_argument('--tags-csv', type=Path, default=None, help='Путь к tags.csv (если не data/tags.csv)')
-    p.add_argument('--tag-aliases', type=Path, default=None, help='Путь к tag_aliases.csv (если не data/tag_aliases.csv)')
-    p.add_argument('--tag-implications', type=Path, default=None, help='Путь к tag_implications.csv (если не data/tag_implications.csv)')
+    p = argparse.ArgumentParser(description="Database conversion and preprocessing")
+    p.add_argument('--root', type=Path, required=True, help='Root data/')
+    p.add_argument('--csv', type=Path, default=None, help='Path to db.csv (if not data/db.csv)')
+    p.add_argument('--tags-csv', type=Path, default=None, help='Path to tags.csv (if not data/tags.csv)')
+    p.add_argument('--tag-aliases', type=Path, default=None, help='Path to tag_aliases.csv (if not data/tag_aliases.csv)')
+    p.add_argument('--tag-implications', type=Path, default=None, help='Path to tag_implications.csv (if not data/tag_implications.csv)')
     p.add_argument('--workers', type=int, default=os.cpu_count() or 4)
-    p.add_argument('--force', action='store_true', help='Пересчитывать даже если свежее')
+    p.add_argument('--force', action='store_true', help='Recalculate even if fresh')
     p.add_argument('--do', nargs='+', default=[
         'parquet', 'tags', 'implications', 'post_tags', 'bitmaps', 'mmaps', 'stats', 'pmi', 'topk'
-    ], help='Какие шаги выполнить')
+    ], help='What steps to take')
     # tuning
     p.add_argument('--topk-k', type=int, default=5000)
     p.add_argument('--pmi-support', type=int, default=50)
@@ -160,8 +161,11 @@ def main() -> None:
     
     if 'tag2vec' in steps:
         step_tag2vec(cfg)
+    
+    if 'post2vec' in steps:
+        step_post2vec(cfg)
 
-    log("Готово.")
+    log("All done.")
 
 if __name__ == '__main__':
     main()

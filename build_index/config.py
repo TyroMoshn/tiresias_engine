@@ -6,7 +6,7 @@ from pathlib import Path
 
 @dataclass
 class Config:
-    # корни и пути
+    # paths and roots
     root: Path
     csv: Path
     posts_parquet: Path
@@ -32,32 +32,32 @@ class Config:
     pools_use_collections: bool = True
     pools_collection_entropy_max: float = 6.0
     pools_top_tags: int = 24
-    tag_shards: int = 256        # сколько партиций хотим (кол-во файлов)
-    parquet_row_group_rows: int = 1_000_000        # размер row group при записи (прибл.)
+    tag_shards: int = 256       # How many partitions do we want (number of files)
+    parquet_row_group_rows: int = 1_000_000     # row group size when written (approx.)
     # tag2vec
     tag2vec_dim: int = 128
     tag2vec_min_df: int = 100
     tag2vec_max_tags: int = 200_000
     tag2vec_source: str = "merge"       # 'merge' | 'pmi' | 'pools'
-    tag2vec_pool_alpha: float = 0.5     # вес «пулов» при merge
-    tag2vec_shift: float = 0.0          # сдвиг PMI (≈log(k) для нег. выборки)
+    tag2vec_pool_alpha: float = 0.5     # "pools" size when merge
+    tag2vec_shift: float = 0.0      # PMI shift
     tag2vec_knn_k: int = 32
 
-    # системное
+    # system
     workers: int = os.cpu_count() or 4
     force: bool = False
-    reliable_only: bool = True  # везде фильтровать deleted/pending
+    reliable_only: bool = True      # filter everywhere deleted/pending
 
     # TOPK
     topk_k: int = 5000
-    topk_mode: str = "static"         # 'static' | 'sqrt_df'
+    topk_mode: str = "static"       # 'static' | 'sqrt_df'
     topk_k_min: int = 100
     topk_k_max: int = 5000
     topk_beta: float = 10.0
 
     # IDF
     idf_alpha: float = 1_000.0
-    idf_source: str = "auto"          # 'tags' | 'local' | 'auto'
+    idf_source: str = "auto"        # 'tags' | 'local' | 'auto'
     idf_auto_switch_threshold: float = 0.90
 
     # PMI/impl

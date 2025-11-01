@@ -70,10 +70,10 @@ def step_pools_parse(cfg: Config) -> None:
     if sentinel.exists() and out_meta.exists() and not cfg.force and newer_than(
         sentinel, cfg.pools_csv
     ):
-        log("[pools] already fresh — skip parse")
+        log("[pools] already fresh - skip parse")
         return
 
-    log("[pools] reading pools.csv …")
+    log("[pools] reading pools.csv...")
     # load with minimal typing, then clean
     df = pl.read_csv(cfg.pools_csv, infer_schema_length=0, ignore_errors=True)
 
@@ -157,7 +157,7 @@ def step_pools_parse(cfg: Config) -> None:
         },
     )
     sentinel.write_text("ok")
-    log(f"[pools] parsed → {out_meta.name} & long parquet")
+    log(f"[pools] parsed -> {out_meta.name} & long parquet")
 
 
 def _load_tag_idf_if_available(cfg: Config) -> pl.DataFrame | None:
@@ -184,10 +184,10 @@ def step_pools_entropy(cfg: Config) -> None:
     pt_dir = cfg.post_tags_parquet
 
     if out.exists() and not cfg.force and newer_than(out, meta, long_dir / "_SUCCESS", pt_dir / "_SUCCESS"):
-        log("[pools] entropy is fresh — skip")
+        log("[pools] entropy is fresh - skip")
         return
 
-    log("[pools] computing tag entropy per pool …")
+    log("[pools] computing tag entropy per pool...")
     # pools long: pool_id, post_id
     pools = pl.scan_parquet(f"{long_dir.as_posix()}/**/*.parquet").select(["pool_id", "post_id"])
 
@@ -257,7 +257,7 @@ def step_pool_edges(cfg: Config) -> None:
     meta_entropy = pl.read_parquet(cfg.pools_entropy_parquet)
 
     if out.exists() and not cfg.force and newer_than(out, long_dir / "_SUCCESS", cfg.pools_entropy_parquet):
-        log("[pools] edges fresh — skip")
+        log("[pools] edges fresh - skip")
         return
 
     elig = meta_entropy.filter(_eligible_pools_mask(cfg, meta_entropy)).select(["pool_id", "size"])
@@ -348,7 +348,7 @@ def step_post_in_pools_count(cfg: Config) -> None:
         mm.flush()
         log(f"[pools] post_in_pools_count.bin ready (aligned to mmaps/post_ids.bin)")
     else:
-        log("[pools] mmaps/post_ids.bin not found — skipping memmap write (run mmaps stage first)")
+        log("[pools] mmaps/post_ids.bin not found - skipping memmap write (run mmaps stage first)")
 
 
 def step_pool_tag_co(cfg: Config) -> None:
@@ -363,7 +363,7 @@ def step_pool_tag_co(cfg: Config) -> None:
     pt_dir = cfg.post_tags_parquet
 
     if out.exists() and not cfg.force and newer_than(out, long_dir / "_SUCCESS", cfg.pools_entropy_parquet, pt_dir / "_SUCCESS"):
-        log("[pools] tag co-occurrence fresh — skip")
+        log("[pools] tag co-occurrence fresh - skip")
         return
 
     meta_entropy = pl.read_parquet(cfg.pools_entropy_parquet)

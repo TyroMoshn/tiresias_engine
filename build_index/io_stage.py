@@ -49,10 +49,10 @@ def step_parquet(cfg: Config) -> None:
     ensure_dir(cfg.posts_parquet)
     sentinel = cfg.posts_parquet / "_SUCCESS"
     if sentinel.exists() and not cfg.force and newer_than(sentinel, cfg.csv):
-        log("[parquet] уже актуально — пропуск")
+        log("[parquet] already fresh - skip")
         return
 
-    log("[parquet] читаем CSV и пишем Parquet с партиционированием…")
+    log("[parquet] Read CSV and write Parquet with partitioning")
     con = duckdb.connect()
     con.execute("PRAGMA threads=%d" % cfg.workers)
     con.execute("SET timezone='UTC'")
@@ -84,4 +84,4 @@ def step_parquet(cfg: Config) -> None:
         """
     )
     sentinel.write_text("ok")
-    log("[parquet] готово")
+    log("[parquet] done")
