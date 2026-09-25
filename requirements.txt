@@ -1,0 +1,16 @@
+colorama==0.4.6
+duckdb==1.4.1
+faiss_cpu==1.9.0 # faiss_cpu
+mkl-service==2.4.0
+mkl_fft
+mkl_random
+numpy
+packaging
+polars==1.35.1
+polars-runtime-32==1.35.1
+pyarrow==22.0.0
+pyroaring==1.0.3
+scipy==1.16.3
+setuptools==80.9.0
+tqdm==4.67.1
+wheel==0.45.1

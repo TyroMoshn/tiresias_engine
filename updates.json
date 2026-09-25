@@ -1,0 +1,12 @@
+{
+  "addons": {
+    "tiresias-booru@extension": {
+      "updates": [
+        {
+          "version": "1.0.0",
+          "update_link": "https://github.com/USER/tiresias/releases/download/v1.0.0/tiresias-booru-1.0.0.xpi"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,2119 @@
+/* ========================================================================= */
+/* Tiresias Browser Extension - Design System Tokens & CSS Architecture     */
+/* ========================================================================= */
+
+:root,
+:root[data-tiresias-theme="default"],
+:root[data-tiresias-theme="classic"] {
+  /* Surfaces & Backgrounds */
+  --tiresias-bg-base: #020f23;
+  --tiresias-bg-header: #152f56;
+  --tiresias-bg-card: #1f3c67;
+  --tiresias-bg-card-hover: #294e82;
+  --tiresias-bg-surface-dark: #0e2447;
+  --tiresias-bg-input: #091a33;
+  --tiresias-bg-overlay: rgba(0, 0, 0, 0.72);
+
+  /* Typography & Text */
+  --tiresias-text-primary: #ffffff;
+  --tiresias-text-secondary: #e2e8f0;
+  --tiresias-text-muted: #99aab5;
+  --tiresias-text-inverse: #020f23;
+  --tiresias-font: "Roboto", Verdana, Helvetica, Arial, sans-serif;
+  --tiresias-font-mono: Consolas, Monaco, "Courier New", monospace;
+
+  /* Borders */
+  --tiresias-border: #2c4d7d;
+  --tiresias-border-light: rgba(255, 255, 255, 0.14);
+  --tiresias-border-subtle: rgba(255, 255, 255, 0.08);
+
+  /* Brand & Accent */
+  --tiresias-gold: #e8c446;
+  --tiresias-gold-hover: #ffd966;
+  --tiresias-gold-dim: rgba(232, 196, 70, 0.2);
+  --tiresias-accent: #b4c7d9;
+  --tiresias-accent-hover: #e9f2fa;
+  --tiresias-accent-active: #22589e;
+  --tiresias-primary-btn: #1e457a;
+  --tiresias-primary-btn-hover: #25589c;
+
+  /* Semantic States */
+  /* Success */
+  --tiresias-success: #3e9e49;
+  --tiresias-success-light: #88ddaa;
+  --tiresias-success-bg: rgba(10, 32, 24, 0.95);
+  --tiresias-success-subtle: rgba(62, 158, 73, 0.2);
+
+  /* Danger */
+  --tiresias-danger: #e45f5f;
+  --tiresias-danger-light: #ff9999;
+  --tiresias-danger-bg: rgba(35, 12, 16, 0.95);
+  --tiresias-danger-subtle: rgba(228, 95, 95, 0.2);
+
+  /* Info */
+  --tiresias-info: #66b2ff;
+  --tiresias-info-bg: rgba(14, 25, 45, 0.95);
+
+  /* Warning */
+  --tiresias-warning: #ffd966;
+  --tiresias-warning-bg: rgba(35, 30, 10, 0.95);
+
+  /* Tester */
+  --tiresias-tester-cyan: #4ec9b0;
+
+  /* Booru Rating Tokens (matching e621 palette) */
+  --tiresias-rating-s: #2e8b57;
+  --tiresias-rating-q: #e8c446;
+  --tiresias-rating-e: #e45f5f;
+
+  /* Tag Taxonomy Tokens */
+  --tiresias-tag-artist: #f2ac57;
+  --tiresias-tag-character: #88ee88;
+  --tiresias-tag-general: var(--tiresias-accent);
+
+  /* Geometry & Radius */
+  --tiresias-radius-sm: 4px;
+  --tiresias-radius-md: 6px;
+  --tiresias-radius-lg: 8px;
+  --tiresias-radius-pill: 9999px;
+
+  /* Shadows */
+  --tiresias-shadow-card: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --tiresias-shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.65);
+  --tiresias-shadow-toast: 0 8px 24px rgba(0, 0, 0, 0.7);
+
+  /* Transitions */
+  --tiresias-transition-fast: 0.15s ease;
+  --tiresias-transition-normal: 0.2s ease;
+
+  /* Layer Hierarchy (Z-Index stack) */
+  --tiresias-z-popover: 1000;
+  --tiresias-z-floating: 9000;
+  --tiresias-z-drawer: 10000;
+  --tiresias-z-modal: 10001;
+  --tiresias-z-toast: 10002;
+
+  /* Backward Compatibility Aliases */
+  --tiresias-bg: var(--tiresias-bg-base);
+  --tiresias-header: var(--tiresias-bg-header);
+  --tiresias-card: var(--tiresias-bg-card);
+  --tiresias-card-hover: var(--tiresias-bg-card-hover);
+  --tiresias-text: var(--tiresias-text-primary);
+}
+
+/* Prepared Hook for Future Theme Customization */
+:root[data-tiresias-theme="slate"] {
+  --tiresias-bg-base: #0f172a;
+  --tiresias-bg-header: #1e293b;
+  --tiresias-bg-card: #334155;
+  --tiresias-bg-card-hover: #475569;
+  --tiresias-bg-surface-dark: #090d16;
+  --tiresias-bg-input: #0b1120;
+}
+
+/* ========================================================================= */
+/* Injected Navigation Bar Items                                             */
+/* ========================================================================= */
+
+nav.navigation .nav-help {
+  overflow: visible !important;
+}
+
+li.tiresias-nav-item {
+  display: flex !important;
+  align-items: center !important;
+}
+
+li.tiresias-nav-first {
+  margin-left: auto !important;
+  border-left: 1px solid var(--tiresias-border-light) !important;
+  padding-left: 10px !important;
+}
+
+li.tiresias-nav-last {
+  margin-right: var(--tiresias-nav-offset, 180px) !important;
+}
+
+.tiresias-nav-link {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  font-weight: bold;
+}
+
+.tiresias-nav-badge {
+  font-size: 13px;
+  line-height: 1;
+  filter: drop-shadow(0 0 4px var(--tiresias-gold-dim));
+}
+
+.tiresias-nav-status,
+.tiresias-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-left: 2px;
+  flex-shrink: 0;
+}
+
+.tiresias-nav-status.online,
+.tiresias-status-dot.online {
+  background-color: var(--tiresias-success);
+  box-shadow: 0 0 6px var(--tiresias-success);
+}
+
+.tiresias-nav-status.offline,
+.tiresias-status-dot.offline {
+  background-color: var(--tiresias-danger);
+  box-shadow: 0 0 4px var(--tiresias-danger);
+}
+
+.tiresias-nav-status.checking,
+.tiresias-status-dot.checking {
+  background-color: var(--tiresias-gold);
+}
+
+/* ========================================================================= */
+/* Floating Action Bar (Event Delegation)                                    */
+/* ========================================================================= */
+
+.tiresias-floating-actions {
+  position: fixed;
+  z-index: var(--tiresias-z-floating);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+.tiresias-floating-actions.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.tiresias-floating-diag {
+  background: rgba(2, 15, 35, 0.96);
+  border: 1px solid var(--tiresias-border);
+  border-radius: var(--tiresias-radius-sm);
+  padding: 3px 8px;
+  font-size: 11px;
+  color: var(--tiresias-gold);
+  font-family: var(--tiresias-font-mono);
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+.tiresias-floating-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(10, 24, 48, 0.92);
+  border: 1px solid var(--tiresias-gold-dim);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 20px;
+  padding: 4px 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.tiresias-floating-btn {
+  background: var(--tiresias-bg-surface-dark);
+  border: 1px solid var(--tiresias-border);
+  color: var(--tiresias-text-primary);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: all var(--tiresias-transition-fast);
+  user-select: none;
+}
+
+.tiresias-floating-btn:hover {
+  background: var(--tiresias-bg-card-hover);
+  border-color: var(--tiresias-gold);
+  transform: scale(1.2);
+}
+
+.tiresias-floating-btn.active {
+  background: #204b2b;
+  border-color: var(--tiresias-gold);
+  color: var(--tiresias-gold);
+  box-shadow: 0 0 8px rgba(232, 196, 70, 0.6);
+}
+
+.tiresias-floating-btn.disliked {
+  background: #5c1818;
+  border-color: #ff4d4d;
+  color: #ff4d4d;
+  box-shadow: 0 0 8px rgba(255, 77, 77, 0.6);
+}
+
+.tiresias-floating-btn.tiresias-act-danger {
+  background: #5c1818 !important;
+  border-color: var(--tiresias-danger) !important;
+  color: #ff4d4d !important;
+}
+
+.tiresias-floating-btn.tiresias-act-danger:hover {
+  background: #7a1d1d !important;
+  transform: scale(1.18) !important;
+}
+
+.tiresias-floating-btn.tiresias-act-primary {
+  background: #184b2c !important;
+  border-color: var(--tiresias-success) !important;
+  color: #aaffaa !important;
+}
+
+.tiresias-floating-btn.tiresias-act-primary:hover {
+  background: #23693e !important;
+  transform: scale(1.18) !important;
+}
+
+/* ========================================================================= */
+/* Post Interaction Visual States                                            */
+/* ========================================================================= */
+
+.tiresias-post-liked {
+  box-shadow: 0 0 0 2.5px var(--tiresias-gold) !important;
+  border-radius: var(--tiresias-radius-md);
+  transition: box-shadow 0.2s ease;
+}
+
+.tiresias-post-disliked,
+.tiresias-post-hidden {
+  position: relative !important;
+  overflow: hidden !important;
+  transition: all 0.2s ease !important;
+}
+
+.tiresias-post-disliked img,
+.tiresias-post-hidden img {
+  filter: blur(6px) brightness(0.7) !important;
+  transition: filter 0.2s ease !important;
+}
+
+.tiresias-post-disliked::after,
+.tiresias-post-hidden::after {
+  content: '✕';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  color: #ff4d4d;
+  font-size: 32px;
+  font-weight: bold;
+  border-radius: var(--tiresias-radius-md);
+  pointer-events: none;
+  z-index: 10;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+  transition: all 0.2s ease;
+}
+
+.tiresias-post-disliked:hover::after,
+.tiresias-post-hidden:hover::after {
+  background: rgba(0, 0, 0, 0.35);
+  color: #ff6666;
+}
+
+.tiresias-video-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: rgba(2, 15, 35, 0.85);
+  border: 1px solid var(--tiresias-gold-dim);
+  color: #fff;
+  border-radius: var(--tiresias-radius-sm);
+  padding: 2px 5px;
+  font-size: 11px;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.tiresias-btn-icon {
+  background: var(--tiresias-bg-surface-dark);
+  border: 1px solid var(--tiresias-border);
+  color: var(--tiresias-text-primary);
+  border-radius: var(--tiresias-radius-sm);
+  padding: 3px 6px;
+  font-size: 12px;
+  cursor: pointer;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--tiresias-transition-fast), border-color var(--tiresias-transition-fast), transform 0.1s ease;
+  user-select: none;
+}
+
+.tiresias-btn-icon:hover {
+  background: var(--tiresias-bg-card-hover);
+  border-color: var(--tiresias-gold);
+  transform: translateY(-1px);
+}
+
+.tiresias-btn-icon.active-like {
+  color: #ff5577;
+  border-color: #ff5577;
+}
+
+.tiresias-btn-icon.active-hide {
+  color: var(--tiresias-danger);
+  border-color: var(--tiresias-danger);
+}
+
+.tiresias-btn-icon-round {
+  border-radius: 50% !important;
+}
+
+/* Post Fade out on Hide */
+article.post-thumbnail.tiresias-hidden {
+  opacity: 0.15 !important;
+  filter: grayscale(1) blur(1px);
+  transition: opacity 0.3s ease, filter 0.3s ease;
+  pointer-events: none;
+}
+
+/* ========================================================================= */
+/* CSS Tooltip                                                               */
+/* ========================================================================= */
+
+[data-tiresias-tooltip] {
+  position: relative;
+}
+
+[data-tiresias-tooltip]::after {
+  content: attr(data-tiresias-tooltip);
+  position: absolute;
+  bottom: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--tiresias-bg-base);
+  color: var(--tiresias-text-primary);
+  border: 1px solid var(--tiresias-border);
+  padding: 3px 6px;
+  border-radius: var(--tiresias-radius-sm);
+  font-size: 11px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--tiresias-transition-fast);
+  z-index: 100;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  font-family: var(--tiresias-font);
+}
+
+[data-tiresias-tooltip]:hover::after {
+  opacity: 1;
+}
+
+/* ========================================================================= */
+/* Dedicated Page Layouts                                                    */
+/* ========================================================================= */
+
+.tiresias-page-wrapper {
+  color: var(--tiresias-text-primary) !important;
+  font-family: var(--tiresias-font) !important;
+  width: 100% !important;
+  max-width: 1720px !important;
+  margin: 0 auto !important;
+  padding: 14px 20px 48px 20px !important;
+  box-sizing: border-box !important;
+}
+
+.tiresias-header-bar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 10px 16px !important;
+  background: var(--tiresias-bg-header) !important;
+  border: 1px solid var(--tiresias-border) !important;
+  border-radius: var(--tiresias-radius-md) !important;
+  margin-bottom: 16px !important;
+  box-sizing: border-box !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+}
+
+.tiresias-header-title {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  font-size: 1.15rem !important;
+  font-weight: bold !important;
+  color: var(--tiresias-gold) !important;
+}
+
+.tiresias-grid-layout {
+  display: flex;
+  gap: 20px;
+}
+
+.tiresias-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  background: var(--tiresias-bg-card);
+  border: 1px solid var(--tiresias-border);
+  border-radius: var(--tiresias-radius-md);
+  padding: 16px;
+  box-sizing: border-box;
+  height: fit-content;
+}
+
+.tiresias-content-area {
+  flex-grow: 1;
+}
+
+.tiresias-posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+/* Card in Feed */
+.tiresias-card-item {
+  background: var(--tiresias-bg-card);
+  border: 1px solid var(--tiresias-border);
+  border-radius: var(--tiresias-radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  content-visibility: auto;
+  contain-intrinsic-size: 260px;
+  box-shadow: var(--tiresias-shadow-card);
+  transition: transform var(--tiresias-transition-fast), border-color var(--tiresias-transition-fast), box-shadow var(--tiresias-transition-fast);
+}
+
+.tiresias-card-item:hover {
+  transform: translateY(-2px);
+  border-color: var(--tiresias-accent);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.tiresias-thumb-box {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--tiresias-bg-base);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.tiresias-thumb-box img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s ease;
+}
+
+.tiresias-card-item:hover .tiresias-thumb-box img {
+  transform: scale(1.03);
+}
+
+.tiresias-card-meta {
+  padding: 8px 10px;
+  font-size: 11px;
+  background: var(--tiresias-bg-header);
+  border-top: 1px solid var(--tiresias-border);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tiresias-meta-row {
+  display: flex;
+  justify-content: space-between;
+  color: var(--tiresias-text-muted);
+}
+
+.tiresias-rating-s { color: var(--tiresias-rating-s); font-weight: bold; }
+.tiresias-rating-q { color: var(--tiresias-rating-q); font-weight: bold; }
+.tiresias-rating-e { color: var(--tiresias-rating-e); font-weight: bold; }
+
+.tiresias-reason-badge {
+  font-size: 10px;
+  color: var(--tiresias-accent);
+  background: rgba(180, 199, 217, 0.1);
+  padding: 2px 4px;
+  border-radius: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ========================================================================= */
+/* UI Primitives: Modals                                                     */
+/* ========================================================================= */
+
+.tiresias-modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: var(--tiresias-bg-overlay) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+  z-index: var(--tiresias-z-modal) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px !important;
+  box-sizing: border-box !important;
+  animation: tiresias-fade-in var(--tiresias-transition-fast) !important;
+}
+
+.tiresias-modal-card {
+  background: var(--tiresias-bg-card) !important;
+  border: 1px solid var(--tiresias-border) !important;
+  border-radius: var(--tiresias-radius-lg) !important;
+  padding: 20px !important;
+  width: 90% !important;
+  max-width: 500px !important;
+  color: var(--tiresias-text-primary) !important;
+  box-shadow: var(--tiresias-shadow-card) !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  animation: tiresias-scale-in var(--tiresias-transition-fast) !important;
+}
+
+.tiresias-modal-card.tiresias-modal-sm { max-width: 380px !important; }
+.tiresias-modal-card.tiresias-modal-md { max-width: 500px !important; }
+.tiresias-modal-card.tiresias-modal-lg { max-width: 680px !important; }
+.tiresias-modal-card.tiresias-modal-xl { max-width: 880px !important; }
+
+.tiresias-modal-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 14px !important;
+  padding-bottom: 10px !important;
+  border-bottom: 1px solid var(--tiresias-border-subtle) !important;
+  flex-shrink: 0 !important;
+}
+
+.tiresias-modal-title {
+  margin: 0 !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  color: var(--tiresias-gold) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.tiresias-modal-body {
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  min-height: 0 !important;
+}
+
+.tiresias-modal-footer {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-top: 16px !important;
+  padding-top: 12px !important;
+  border-top: 1px solid var(--tiresias-border-subtle) !important;
+  flex-shrink: 0 !important;
+}
+
+.tiresias-modal-close {
+  background: transparent !important;
+  border: none !important;
+  color: var(--tiresias-text-muted) !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+  padding: 4px 6px !important;
+  border-radius: var(--tiresias-radius-sm) !important;
+  transition: all var(--tiresias-transition-fast) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+
+.tiresias-modal-close:hover {
+  color: var(--tiresias-text-primary) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ========================================================================= */
+/* UI Primitives: Drawers                                                    */
+/* ========================================================================= */
+
+.tiresias-drawer {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 440px !important;
+  max-width: 100vw !important;
+  background: var(--tiresias-bg-base) !important;
+  border-left: 2px solid var(--tiresias-border) !important;
+  z-index: var(--tiresias-z-drawer) !important;
+  padding: 20px !important;
+  box-sizing: border-box !important;
+  overflow-y: auto !important;
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.7) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  animation: tiresias-drawer-slide-in var(--tiresias-transition-normal) !important;
+}
+
+.tiresias-drawer-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 14px !important;
+  padding-bottom: 10px !important;
+  border-bottom: 1px solid var(--tiresias-border-subtle) !important;
+  flex-shrink: 0 !important;
+}
+
+.tiresias-drawer-title {
+  margin: 0 !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  color: var(--tiresias-gold) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.tiresias-drawer-content {
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+}
+
+.tiresias-drawer-close {
+  background: transparent !important;
+  border: none !important;
+  color: var(--tiresias-text-muted) !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+  padding: 4px 6px !important;
+  border-radius: var(--tiresias-radius-sm) !important;
+  transition: all var(--tiresias-transition-fast) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+
+.tiresias-drawer-close:hover {
+  color: var(--tiresias-text-primary) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ========================================================================= */
+/* UI Primitives: Forms & Inputs                                             */
+/* ========================================================================= */
+
+.tiresias-form-group {
+  margin-bottom: 14px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+
+.tiresias-form-label {
+  display: block !important;
+  font-size: 12px !important;
+  color: var(--tiresias-accent) !important;
+  margin-bottom: 2px !important;
+  font-weight: bold !important;
+}
+
+.tiresias-form-error {
+  font-size: 11px !important;
+  color: var(--tiresias-danger-light) !important;
+  margin-top: 3px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+.tiresias-form-hint {
+  font-size: 11px !important;
+  color: var(--tiresias-text-muted) !important;
+  margin-top: 2px !important;
+  line-height: 1.3 !important;
+}
+
+.tiresias-input {
+  width: 100% !important;
+  padding: 7px 10px !important;
+  background: var(--tiresias-bg-input) !important;
+  border: 1px solid var(--tiresias-border) !important;
+  color: var(--tiresias-text-primary) !important;
+  border-radius: var(--tiresias-radius-sm) !important;
+  font-size: 13px !important;
+  font-family: inherit !important;
+  box-sizing: border-box !important;
+  outline: none !important;
+  transition: border-color var(--tiresias-transition-fast), box-shadow var(--tiresias-transition-fast) !important;
+}
+
+.tiresias-input:focus {
+  border-color: var(--tiresias-gold) !important;
+  box-shadow: 0 0 0 2px var(--tiresias-gold-dim) !important;
+}
+
+.tiresias-input:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+.tiresias-input-error {
+  border-color: var(--tiresias-danger) !important;
+  box-shadow: 0 0 0 2px var(--tiresias-danger-subtle) !important;
+}
+
+.tiresias-select {
+  width: 100% !important;
+  padding: 7px 10px !important;
+  background: var(--tiresias-bg-input) !important;
+  border: 1px solid var(--tiresias-border) !important;
+  color: var(--tiresias-text-primary) !important;
+  border-radius: var(--tiresias-radius-sm) !important;
+  font-size: 13px !important;
+  font-family: inherit !important;
+  box-sizing: border-box !important;
+  outline: none !important;
+  cursor: pointer !important;
+  transition: border-color var(--tiresias-transition-fast), box-shadow var(--tiresias-transition-fast) !important;
+}
+
+.tiresias-select:focus {
+  border-color: var(--tiresias-gold) !important;
+  box-shadow: 0 0 0 2px var(--tiresias-gold-dim) !important;
+}
+
+.tiresias-select:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+.tiresias-select-error {
+  border-color: var(--tiresias-danger) !important;
+  box-shadow: 0 0 0 2px var(--tiresias-danger-subtle) !important;
+}
+
+/* ========================================================================= */
+/* UI Primitives: Buttons & Sizes                                            */
+/* ========================================================================= */
+
+.tiresias-btn,
+.tiresias-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 6px 14px !important;
+  border-radius: var(--tiresias-radius-sm) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  font-family: inherit !important;
+  cursor: pointer !important;
+  border: 1px solid var(--tiresias-border) !important;
+  background: var(--tiresias-bg-card) !important;
+  color: var(--tiresias-text-primary) !important;
+  transition: background var(--tiresias-transition-fast), border-color var(--tiresias-transition-fast), transform 0.1s ease !important;
+  text-decoration: none !important;
+  user-select: none !important;
+  box-sizing: border-box !important;
+  line-height: 1.4 !important;
+}
+
+.tiresias-btn:hover:not(:disabled),
+.tiresias-button:hover:not(:disabled) {
+  background: var(--tiresias-bg-card-hover) !important;
+  border-color: var(--tiresias-gold) !important;
+  color: var(--tiresias-text-primary) !important;
+}
+
+.tiresias-btn:active:not(:disabled),
+.tiresias-button:active:not(:disabled) {
+  transform: scale(0.98) !important;
+}
+
+.tiresias-btn:disabled,
+.tiresias-button:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+/* Button Variants */
+.tiresias-btn-primary,
+.tiresias-btn.primary,
+.tiresias-button.primary {
+  background: var(--tiresias-bg-header) !important;
+  border-color: var(--tiresias-gold) !important;
+  color: var(--tiresias-gold) !important;
+  font-weight: bold !important;
+}
+
+.tiresias-btn-primary:hover:not(:disabled),
+.tiresias-btn.primary:hover:not(:disabled),
+.tiresias-button.primary:hover:not(:disabled) {
+  background: var(--tiresias-gold) !important;
+  color: var(--tiresias-text-inverse) !important;
+  border-color: var(--tiresias-gold-hover) !important;
+}
+
+.tiresias-btn-secondary,
+.tiresias-btn.secondary,
+.tiresias-button.secondary {
+  background: var(--tiresias-bg-card) !important;
+  border-color: var(--tiresias-border) !important;
+  color: var(--tiresias-text-primary) !important;
+}
+
+.tiresias-btn-secondary:hover:not(:disabled),
+.tiresias-btn.secondary:hover:not(:disabled),
+.tiresias-button.secondary:hover:not(:disabled) {
+  background: var(--tiresias-bg-card-hover) !important;
+  border-color: var(--tiresias-accent) !important;
+}
+
+.tiresias-btn-danger,
+.tiresias-btn.danger,
+.tiresias-button.danger {
+  background: var(--tiresias-danger-subtle) !important;
+  border-color: var(--tiresias-danger) !important;
+  color: var(--tiresias-danger-light) !important;
+}
+
+.tiresias-btn-danger:hover:not(:disabled),
+.tiresias-btn.danger:hover:not(:disabled),
+.tiresias-button.danger:hover:not(:disabled) {
+  background: var(--tiresias-danger) !important;
+  color: #ffffff !important;
+}
+
+.tiresias-btn-success,
+.tiresias-btn.success,
+.tiresias-button.success {
+  background: var(--tiresias-success-subtle) !important;
+  border-color: var(--tiresias-success) !important;
+  color: var(--tiresias-success-light) !important;
+}
+
+.tiresias-btn-success:hover:not(:disabled),
+.tiresias-btn.success:hover:not(:disabled),
+.tiresias-button.success:hover:not(:disabled) {
+  background: var(--tiresias-success) !important;
+  color: #ffffff !important;
+}
+
+.tiresias-btn-ghost,
+.tiresias-btn.ghost,
+.tiresias-button.ghost {
+  background: transparent !important;
+  border-color: transparent !important;
+  color: var(--tiresias-accent) !important;
+}
+
+.tiresias-btn-ghost:hover:not(:disabled),
+.tiresias-btn.ghost:hover:not(:disabled),
+.tiresias-button.ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--tiresias-text-primary) !important;
+}
+
+/* Button Sizes */
+.tiresias-btn-sm {
+  padding: 3px 8px !important;
+  font-size: 11px !important;
+}
+
+.tiresias-btn-md {
+  padding: 6px 14px !important;
+  font-size: 13px !important;
+}
+
+.tiresias-btn-lg {
+  padding: 10px 20px !important;
+  font-size: 15px !important;
+}
+
+/* ========================================================================= */
+/* UI Primitives: Toggles & Segmented Controls                               */
+/* ========================================================================= */
+
+/* Switch Toggle Primitive */
+.tiresias-toggle-switch {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+  user-select: none !important;
+}
+
+.tiresias-toggle-switch input[type="checkbox"] {
+  display: none !important;
+}
+
+.tiresias-toggle-switch-track {
+  width: 2.5rem !important;
+  height: 1.25rem !important;
+  background-color: var(--tiresias-bg-input) !important;
+  border: 1px solid var(--tiresias-border) !important;
+  border-radius: var(--tiresias-radius-pill) !important;
+  position: relative !important;
+  transition: background-color var(--tiresias-transition-fast), border-color var(--tiresias-transition-fast) !important;
+  flex-shrink: 0 !important;
+}
+
+.tiresias-toggle-switch-thumb {
+  width: 0.9rem !important;
+  height: 0.9rem !important;
+  position: absolute !important;
+  top: 2px !important;
+  left: 2px !important;
+  background: #4a6fa5 !important;
+  border-radius: 50% !important;
+  transition: left 120ms ease, background-color var(--tiresias-transition-fast) !important;
+}
+
+.tiresias-toggle-switch input[type="checkbox"]:checked ~ .tiresias-toggle-switch-track,
+.tiresias-toggle-switch.checked .tiresias-toggle-switch-track {
+  background-color: rgba(232, 196, 70, 0.25) !important;
+  border-color: var(--tiresias-gold) !important;
+}
+
+.tiresias-toggle-switch input[type="checkbox"]:checked ~ .tiresias-toggle-switch-track .tiresias-toggle-switch-thumb,
+.tiresias-toggle-switch.checked .tiresias-toggle-switch-track .tiresias-toggle-switch-thumb {
+  left: calc(100% - 0.9rem - 2px) !important;
+  background: var(--tiresias-gold) !important;
+}
+
+/* Pill Toggle Primitive */
+.tiresias-toggle-pill {
+  display: inline-flex !important;
+  width: 100% !important;
+  max-width: 8.5rem !important;
+  height: 1.5rem !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  cursor: pointer !important;
+  border-radius: var(--tiresias-radius-sm) !important;
+  background-color: var(--tiresias-bg-surface-dark) !important;
+  font-size: 0.8rem !important;
+  line-height: 1.5rem !important;
+  align-items: center !important;
+  overflow: hidden !important;
+  border: 1px solid var(--tiresias-border-light) !important;
+  user-select: none !important;
+}
+
+.tiresias-toggle-pill input[type="checkbox"] {
+  display: none !important;
+}
+
+.tiresias-toggle-pill::after {
+  content: "" !important;
+  width: 50% !important;
+  height: 1.5rem !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  background: var(--tiresias-accent-active) !important;
+  border-radius: 3px !important;
+  transition: left 120ms ease !important;
+  z-index: 0 !important;
+}
+
+.tiresias-toggle-pill .pill-option {
+  width: 50% !important;
+  z-index: 1 !important;
+  text-align: center !important;
+  font-weight: bold !important;
+  transition: color var(--tiresias-transition-fast) !important;
+}
+
+.tiresias-toggle-pill .pill-off {
+  color: var(--tiresias-text-primary) !important;
+}
+
+.tiresias-toggle-pill .pill-on {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.tiresias-toggle-pill:has(input[type="checkbox"]:checked)::after {
+  left: 50% !important;
+}
+
+.tiresias-toggle-pill:has(input[type="checkbox"]:checked) .pill-off {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.tiresias-toggle-pill:has(input[type="checkbox"]:checked) .pill-on {
+  color: var(--tiresias-text-primary) !important;
+}
+
+/* Standardized Segmented Control */
+.tiresias-segmented {
+  display: grid !important;
+  grid-auto-flow: column !important;
+  grid-auto-columns: 1fr !important;
+  gap: 4px !important;
+  background: rgba(0, 0, 0, 0.35) !important;
+  padding: 3px !important;
+  border-radius: var(--tiresias-radius-md) !important;
+  border: 1px solid var(--tiresias-border) !important;
+  box-sizing: border-box !important;
+}
+
+.tiresias-segmented-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 6px 12px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  border-radius: var(--tiresias-radius-sm) !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: var(--tiresias-text-muted) !important;
+  cursor: pointer !important;
+  transition: all var(--tiresias-transition-fast) !important;
+  user-select: none !important;
+  outline: none !important;
+  white-space: nowrap !important;
+}
+
+.tiresias-segmented-btn:hover:not(.active) {
+  color: var(--tiresias-text-primary) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.tiresias-segmented-btn.active {
+  background: var(--tiresias-accent-active) !important;
+  border-color: #3b76c4 !important;
+  color: #ffffff !important;
+  font-weight: bold !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* ========================================================================= */
+/* UI Primitives: Badges                                                     */
+/* ========================================================================= */
+
+.tiresias-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  padding: 2px 7px !important;
+  border-radius: var(--tiresias-radius-sm) !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+  box-sizing: border-box !important;
+  text-decoration: none !important;
+  border: 1px solid transparent !important;
+}
+
+.tiresias-badge-s {
+  background: rgba(46, 139, 87, 0.2) !important;
+  border-color: var(--tiresias-rating-s) !important;
+  color: var(--tiresias-rating-s) !important;
+  font-weight: bold !important;
+}
+
+.tiresias-badge-q {
+  background: rgba(232, 196, 70, 0.2) !important;
+  border-color: var(--tiresias-rating-q) !important;
+  color: var(--tiresias-rating-q) !important;
+  font-weight: bold !important;
+}
+
+.tiresias-badge-e {
+  background: rgba(228, 95, 95, 0.2) !important;
+  border-color: var(--tiresias-rating-e) !important;
+  color: var(--tiresias-rating-e) !important;
+  font-weight: bold !important;
+}
+
+.tiresias-badge-artist {
+  background: rgba(242, 172, 87, 0.15) !important;
+  border-color: rgba(242, 172, 87, 0.4) !important;
+  color: var(--tiresias-tag-artist) !important;
+  font-weight: 500 !important;
+}
+
+.tiresias-badge-character {
+  background: rgba(136, 238, 136, 0.15) !important;
+  border-color: rgba(136, 238, 136, 0.4) !important;
+  color: var(--tiresias-tag-character) !important;
+  font-weight: 500 !important;
+}
+
+.tiresias-badge-general {
+  background: rgba(180, 199, 217, 0.12) !important;
+  border-color: rgba(180, 199, 217, 0.3) !important;
+  color: var(--tiresias-tag-general) !important;
+}
+
+.tiresias-badge-tester {
+  background: rgba(78, 201, 176, 0.15) !important;
+  border-color: var(--tiresias-tester-cyan) !important;
+  color: var(--tiresias-tester-cyan) !important;
+}
+
+.tiresias-badge-gold {
+  background: var(--tiresias-gold-dim) !important;
+  border-color: var(--tiresias-gold) !important;
+  color: var(--tiresias-gold) !important;
+}
+
+.tiresias-badge-info {
+  background: rgba(102, 178, 255, 0.15) !important;
+  border-color: var(--tiresias-info) !important;
+  color: var(--tiresias-info) !important;
+}
+
+.tiresias-badge-status {
+  background: rgba(0, 0, 0, 0.35) !important;
+  border-color: var(--tiresias-border) !important;
+  color: var(--tiresias-text-secondary) !important;
+}
+
+/* ========================================================================= */
+/* UI Primitives: Toast Notification System                                  */
+/* ========================================================================= */
+
+.tiresias-toast-container {
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+  z-index: var(--tiresias-z-toast) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  pointer-events: none !important;
+  max-width: 440px !important;
+  width: calc(100% - 40px) !important;
+}
+
+.tiresias-floating-toast {
+  position: relative !important;
+  padding: 10px 16px !important;
+  border-radius: var(--tiresias-radius-lg) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  box-shadow: var(--tiresias-shadow-toast) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  animation: tiresias-toast-fadein var(--tiresias-transition-normal) !important;
+  pointer-events: auto !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Standalone toast when mounted directly to body or page wrapper */
+body > .tiresias-floating-toast,
+.tiresias-page-wrapper > .tiresias-floating-toast {
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+  z-index: var(--tiresias-z-toast) !important;
+  max-width: 440px !important;
+}
+
+.tiresias-floating-toast.toast-success {
+  background: var(--tiresias-success-bg) !important;
+  border: 1px solid var(--tiresias-success) !important;
+  color: #a8f5e5 !important;
+}
+
+.tiresias-floating-toast.toast-error {
+  background: var(--tiresias-danger-bg) !important;
+  border: 1px solid var(--tiresias-danger) !important;
+  color: var(--tiresias-danger-light) !important;
+}
+
+.tiresias-floating-toast.toast-info {
+  background: var(--tiresias-info-bg) !important;
+  border: 1px solid var(--tiresias-info) !important;
+  color: #cce5ff !important;
+}
+
+.tiresias-floating-toast.toast-warning {
+  background: var(--tiresias-warning-bg) !important;
+  border: 1px solid var(--tiresias-warning) !important;
+  color: #fff2a8 !important;
+}
+
+/* ========================================================================= */
+/* e621ng Native Layout & Grid System                                        */
+/* ========================================================================= */
+
+.tiresias-layout-wrapper {
+  display: flex !important;
+  gap: 16px !important;
+  align-items: flex-start !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Native Collapsible Sidebar (class="sidebar") */
+.tiresias-sidebar {
+  width: 16rem !important;
+  min-width: 16rem !important;
+  max-width: 16rem !important;
+  background: var(--tiresias-bg-header) !important;
+  border: 1px solid var(--tiresias-border-light) !important;
+  border-radius: var(--tiresias-radius-sm) !important;
+  padding: 0.75rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.75rem !important;
+  box-sizing: border-box !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+  transition: all 0.2s ease !important;
+}
+
+.tiresias-sidebar.collapsed {
+  display: none !important;
+}
+
+.tiresias-content-area {
+  flex: 1 1 0% !important;
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+.tiresias-sidebar-section {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  border-bottom: 1px solid var(--tiresias-border-subtle) !important;
+  padding-bottom: 10px !important;
+}
+
+.tiresias-sidebar-section:last-child {
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+}
+
+.tiresias-sidebar-title {
+  font-size: 0.85rem !important;
+  font-weight: bold !important;
+  color: var(--tiresias-gold) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* ========================================================================= */
+/* Native e621ng Responsive Thumbnail Grid                                   */
+/* ========================================================================= */
+
+.tiresias-posts-container {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(var(--thumb-image-size, 180px), 1fr)) !important;
+  gap: 10px !important;
+  padding: 6px 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  --thumb-image-min: var(--thumb-image-size, 180px) !important;
+  --thumb-image-max: var(--thumb-image-size, 180px) !important;
+}
+
+/* Thumbnail wrapper */
+.tiresias-posts-container article.thumbnail,
+.tiresias-post-thumb {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  position: relative !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* Link surrounding the image */
+.tiresias-posts-container article.thumbnail a.thm-link,
+.tiresias-post-thumb .thm-link {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  aspect-ratio: 1 !important;
+  border-radius: var(--tiresias-radius-sm) var(--tiresias-radius-sm) 0 0 !important;
+  overflow: hidden !important;
+  background: rgba(0, 0, 0, 0.3) !important;
+  position: relative !important;
+  box-sizing: border-box !important;
+  transition: transform var(--tiresias-transition-fast), box-shadow var(--tiresias-transition-fast) !important;
+}
+
+.tiresias-posts-container article.thumbnail:hover a.thm-link,
+.tiresias-post-thumb:hover .thm-link {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* When stats are hidden or disabled: round all 4 corners */
+.tiresias-posts-container.no-stats article.thumbnail a.thm-link,
+.tiresias-posts-container[data-st-show-desc="false"] article.thumbnail a.thm-link,
+.tiresias-posts-container.no-stats .tiresias-post-thumb .thm-link,
+.tiresias-posts-container[data-st-show-desc="false"] .tiresias-post-thumb .thm-link {
+  border-radius: var(--tiresias-radius-sm) !important;
+}
+
+/* Thumbnail Image inside */
+.tiresias-posts-container article.thumbnail a.thm-link img,
+.tiresias-post-thumb .thm-link img {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+  pointer-events: none !important;
+}
+
+/* Crop vs Full (Contain) */
+body[data-st-contain="true"] .tiresias-posts-container article.thumbnail a.thm-link img,
+.tiresias-posts-container[data-st-contain="true"] article.thumbnail a.thm-link img {
+  object-fit: contain !important;
+}
+
+/* ========================================================================= */
+/* Exact Native e621ng Post Info Bar (.thm-desc)                             */
+/* ========================================================================= */
+
+article.thumbnail .thm-desc,
+.tiresias-post-thumb .thm-desc {
+  display: grid !important;
+  grid-template-columns: auto 1.35rem !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  font-size: 0.75rem !important;
+  line-height: 0.75rem !important;
+  font-weight: bold !important;
+  font-family: var(--tiresias-font) !important;
+  border-radius: 0 0 0.25rem 0.25rem !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Hide when disabled */
+.tiresias-posts-container.no-stats .thm-desc,
+.tiresias-posts-container[data-st-show-desc="false"] .thm-desc {
+  display: none !important;
+}
+
+/* Rating-dependent background colors for column B */
+article.thumbnail .thm-desc.thm-rating-e,
+.tiresias-post-thumb .thm-desc.thm-rating-e {
+  background-color: var(--tiresias-rating-e) !important;
+}
+article.thumbnail .thm-desc.thm-rating-q,
+.tiresias-post-thumb .thm-desc.thm-rating-q {
+  background-color: var(--tiresias-rating-q) !important;
+}
+article.thumbnail .thm-desc.thm-rating-s,
+.tiresias-post-thumb .thm-desc.thm-rating-s {
+  background-color: var(--tiresias-rating-s) !important;
+}
+
+/* Column A: score, favorites, comments */
+article.thumbnail .thm-desc-a,
+.tiresias-post-thumb .thm-desc-a {
+  display: flex !important;
+  column-gap: 6% !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 0.25rem 0.35rem !important;
+  border-radius: 0 0 0 0.25rem !important;
+  background: var(--tiresias-bg-header) !important;
+  overflow: hidden !important;
+  box-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.4) !important;
+  white-space: nowrap !important;
+}
+
+/* Column B: rating character */
+article.thumbnail .thm-desc-b,
+.tiresias-post-thumb .thm-desc-b {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0.25rem 0 !important;
+  text-align: center !important;
+  font-weight: bold !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase !important;
+  line-height: 1 !important;
+  color: #ffffff !important;
+}
+
+article.thumbnail .thm-desc.thm-rating-s .thm-desc-b,
+.tiresias-post-thumb .thm-desc.thm-rating-s .thm-desc-b {
+  color: #ffffff !important;
+}
+
+article.thumbnail .thm-desc.thm-rating-q .thm-desc-b,
+.tiresias-post-thumb .thm-desc.thm-rating-q .thm-desc-b {
+  color: #000000 !important;
+}
+
+article.thumbnail .thm-desc.thm-rating-e .thm-desc-b,
+.tiresias-post-thumb .thm-desc.thm-rating-e .thm-desc-b {
+  color: #ffffff !important;
+}
+
+/* Guard reset in case a badge component is placed inside thm-desc-b */
+.thm-desc-b .tiresias-badge {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  color: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+}
+
+/* Metric badges */
+article.thumbnail .thm-desc-m,
+.tiresias-post-thumb .thm-desc-m {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.15rem !important;
+  flex-shrink: 1 !important;
+  font-size: 0.75rem !important;
+  line-height: 1 !important;
+}
+
+.tiresias-post-thumb .thm-desc-m.thm-score {
+  color: var(--tiresias-accent) !important;
+}
+
+.tiresias-post-thumb .thm-desc-m.thm-favorites {
+  color: var(--tiresias-gold) !important;
+}
+
+.tiresias-post-thumb .thm-desc-m.thm-comments {
+  color: var(--tiresias-text-muted) !important;
+}
+
+/* ========================================================================= */
+/* e621ng Native Search Controls Bar and Floating Popovers                    */
+/* ========================================================================= */
+
+.search-controls {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.35rem !important;
+  background: var(--tiresias-bg-surface-dark) !important;
+  padding: 3px !important;
+  border-radius: var(--tiresias-radius-sm) !important;
+  border: 1px solid var(--tiresias-border-light) !important;
+}
+
+.search-controls .sc-btn {
+  height: 1.6rem !important;
+  padding: 0 0.45rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.35rem !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 3px !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  cursor: pointer !important;
+  font-size: 0.8rem !important;
+  font-family: inherit !important;
+  transition: all var(--tiresias-transition-fast) !important;
+}
+
+.search-controls .sc-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+.search-controls .sc-btn.active {
+  background: var(--tiresias-accent-active) !important;
+  border-color: #3b76c4 !important;
+  color: #ffffff !important;
+}
+
+.search-controls .sc-btn svg {
+  width: 1.15rem !important;
+  height: 1.15rem !important;
+  stroke: currentColor !important;
+}
+
+/* Floating Popover Containers */
+#advanced-search-container,
+#layout-settings-container,
+#stats-popover-container,
+#board-algorithm-container,
+.tiresias-popover-container {
+  display: none !important;
+  flex-flow: column !important;
+  gap: 0.65rem !important;
+  position: absolute !important;
+  top: 56px !important;
+  right: 12px !important;
+  z-index: var(--tiresias-z-popover) !important;
+  background: var(--tiresias-bg-header) !important;
+  padding: 0.75rem 0.85rem !important;
+  line-height: 1rem !important;
+  border-radius: var(--tiresias-radius-sm) !important;
+  min-width: 18rem !important;
+  max-width: 24rem !important;
+  box-shadow: var(--tiresias-shadow-popover) !important;
+  border: 1px solid var(--tiresias-border-light) !important;
+  box-sizing: border-box !important;
+}
+
+#advanced-search-container.active,
+#layout-settings-container.active,
+#stats-popover-container.active,
+#board-algorithm-container.active,
+.tiresias-popover-container.active {
+  display: flex !important;
+  animation: tiresias-popover-in var(--tiresias-transition-fast);
+}
+
+#board-algorithm-container {
+  top: 100% !important;
+  margin-top: 6px !important;
+  right: 0 !important;
+  left: auto !important;
+}
+
+#layout-settings-container {
+  right: 130px !important;
+  left: auto !important;
+  transform: none !important;
+}
+
+#advanced-search-container {
+  right: 80px !important;
+  left: auto !important;
+  transform: none !important;
+}
+
+#stats-popover-container {
+  right: 12px !important;
+  left: auto !important;
+  transform: none !important;
+}
+
+#advanced-search-container h3,
+#layout-settings-container h3,
+#stats-popover-container h3,
+#board-algorithm-container h3,
+.tiresias-popover-container h3 {
+  margin: 0 0 0.25rem 0 !important;
+  font-size: 0.95rem !important;
+  font-weight: bold !important;
+  color: var(--tiresias-gold) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  position: relative !important;
+  padding-bottom: 0.35rem !important;
+  border-bottom: 1px solid var(--tiresias-border-subtle) !important;
+}
+
+#advanced-search-container h3 button.st-button,
+#layout-settings-container h3 button.st-button,
+#stats-popover-container h3 button.st-button,
+#board-algorithm-container h3 button.st-button,
+.tiresias-popover-container h3 button.st-button {
+  background: transparent !important;
+  border: none !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  cursor: pointer !important;
+  padding: 0.2rem !important;
+  border-radius: 3px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  transition: all var(--tiresias-transition-fast) !important;
+}
+
+#advanced-search-container h3 button.st-button:hover,
+#layout-settings-container h3 button.st-button:hover,
+#stats-popover-container h3 button.st-button:hover,
+#board-algorithm-container h3 button.st-button:hover,
+.tiresias-popover-container h3 button.st-button:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Grid Entry rows inside Popovers */
+.ssc-entry {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  grid-column-gap: 0.5rem !important;
+  align-items: center !important;
+}
+
+.ssc-label {
+  font-size: 0.85rem !important;
+  color: var(--tiresias-text-secondary) !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.ssc-label label {
+  font-weight: normal !important;
+  cursor: default !important;
+}
+
+.ssc-body {
+  display: flex !important;
+  justify-content: flex-end !important;
+}
+
+/* Authentic .sto-toggle (Pill switch with text: Crop / Full) */
+label.sto-toggle {
+  display: flex !important;
+  width: 100% !important;
+  max-width: 8.5rem !important;
+  height: 1.5rem !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  cursor: pointer !important;
+  border-radius: var(--tiresias-radius-sm) !important;
+  background-color: var(--tiresias-bg-surface-dark) !important;
+  font-size: 0.85rem !important;
+  line-height: 1.5rem !important;
+  align-items: center !important;
+  text-align: center !important;
+  font-weight: normal !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  user-select: none !important;
+}
+
+label.sto-toggle::after {
+  content: "" !important;
+  width: 50% !important;
+  height: 1.5rem !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  background: var(--tiresias-accent-active) !important;
+  border-radius: 3px !important;
+  transition: left 120ms ease !important;
+  z-index: 0 !important;
+}
+
+label.sto-toggle .sto-on,
+label.sto-toggle .sto-off {
+  width: 50% !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+  user-select: none !important;
+  position: relative !important;
+  font-size: 0.8rem !important;
+  font-weight: bold !important;
+  text-align: center !important;
+}
+
+label.sto-toggle .sto-off {
+  color: #ffffff !important;
+}
+
+label.sto-toggle .sto-on {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+input[type="checkbox"].sto-toggle {
+  display: none !important;
+}
+
+input[type="checkbox"].sto-toggle:checked + label.sto-toggle::after {
+  left: 50% !important;
+}
+
+input[type="checkbox"].sto-toggle:checked + label.sto-toggle .sto-off {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+input[type="checkbox"].sto-toggle:checked + label.sto-toggle .sto-on {
+  color: #ffffff !important;
+}
+
+/* Authentic .st-toggle (Compact boolean switch) */
+label.st-toggle {
+  display: flex !important;
+  width: 2.5rem !important;
+  height: 1.5rem !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  cursor: pointer !important;
+  font-size: 0 !important;
+  user-select: none !important;
+}
+
+label.st-toggle::before {
+  content: "" !important;
+  width: 2.5rem !important;
+  height: 0.75rem !important;
+  box-sizing: border-box !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 0.375rem !important;
+  background-color: var(--tiresias-bg-input) !important;
+  border-radius: 0.25rem !important;
+  box-shadow: inset 0 0 0.25rem #00000090 !important;
+}
+
+label.st-toggle::after {
+  content: "" !important;
+  width: 1rem !important;
+  height: 1rem !important;
+  position: absolute !important;
+  top: 0.25rem !important;
+  left: 0 !important;
+  background: #4a6fa5 !important;
+  border-radius: 0.25rem !important;
+  transition: left 120ms ease, background-color 150ms ease !important;
+}
+
+input[type="checkbox"].st-toggle {
+  display: none !important;
+}
+
+input[type="checkbox"].st-toggle:checked + label.st-toggle::after {
+  left: 1.5rem !important;
+  background: var(--tiresias-gold) !important;
+}
+
+/* Authentic .stm-toggle (Segmented toggle group) */
+.stm-toggle {
+  display: grid !important;
+  gap: 2px !important;
+  background: rgba(0, 0, 0, 0.25) !important;
+  padding: 2px !important;
+  border-radius: var(--tiresias-radius-sm) !important;
+  border: 1px solid var(--tiresias-border-subtle) !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.stm-toggle input[type="radio"],
+.stm-toggle input[type="checkbox"] {
+  display: none !important;
+}
+
+.stm-toggle label {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.25rem !important;
+  background: var(--tiresias-bg-surface-dark) !important;
+  padding: 0.25rem 0.5rem !important;
+  font-family: var(--tiresias-font) !important;
+  font-weight: normal !important;
+  line-height: 1rem !important;
+  font-size: 0.8rem !important;
+  user-select: none !important;
+  cursor: pointer !important;
+  border-radius: 3px !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  transition: all var(--tiresias-transition-fast) !important;
+  text-align: center !important;
+}
+
+.stm-toggle label:hover {
+  background: var(--tiresias-bg-card-hover) !important;
+  color: #fff !important;
+}
+
+.stm-toggle input[type="radio"]:checked + label,
+.stm-toggle input[type="checkbox"]:checked + label {
+  background: var(--tiresias-accent-active) !important;
+  color: #ffffff !important;
+  font-weight: bold !important;
+}
+
+/* e621ng Rating-specific colors in .stm-toggle */
+#advanced-search-container .ssc-body.stm-toggle input[value="s"]:checked + label {
+  background-color: var(--tiresias-rating-s) !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+#advanced-search-container .ssc-body.stm-toggle input[value="q"]:checked + label {
+  background-color: var(--tiresias-rating-q) !important;
+  color: #000000 !important;
+  opacity: 1 !important;
+}
+
+#advanced-search-container .ssc-body.stm-toggle input[value="e"]:checked + label {
+  background-color: var(--tiresias-rating-e) !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+#advanced-search-container .ssc-body.stm-toggle input:not(:checked) + label {
+  opacity: 0.45 !important;
+  background: var(--tiresias-bg-surface-dark) !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Placeholder for thumbnail */
+.tiresias-thumb-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--tiresias-text-muted);
+  font-size: 13px;
+  font-family: var(--tiresias-font-mono);
+}
+
+/* ========================================================================= */
+/* Tab Navigation                                                            */
+/* ========================================================================= */
+
+.tiresias-tabs {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-bottom: 20px !important;
+  border-bottom: 2px solid var(--tiresias-border) !important;
+  padding-bottom: 0px !important;
+}
+
+.tiresias-tab {
+  background: rgba(21, 47, 86, 0.6) !important;
+  border: 1px solid var(--tiresias-border) !important;
+  border-bottom: none !important;
+  border-radius: var(--tiresias-radius-md) var(--tiresias-radius-md) 0 0 !important;
+  color: var(--tiresias-text-muted) !important;
+  font-size: 13px !important;
+  font-weight: bold !important;
+  padding: 9px 18px !important;
+  cursor: pointer !important;
+  transition: all var(--tiresias-transition-fast) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  text-decoration: none !important;
+}
+
+.tiresias-tab:hover {
+  background: var(--tiresias-bg-card) !important;
+  color: var(--tiresias-text-primary) !important;
+  border-color: var(--tiresias-accent) !important;
+}
+
+.tiresias-tab.active {
+  background: var(--tiresias-bg-card) !important;
+  color: var(--tiresias-gold) !important;
+  border-color: var(--tiresias-gold) !important;
+  border-bottom: 2px solid var(--tiresias-bg-card) !important;
+  margin-bottom: -2px !important;
+  box-shadow: 0 -2px 8px var(--tiresias-gold-dim) !important;
+}
+
+/* ========================================================================= */
+/* Isolated Nav Group in Header                                              */
+/* ========================================================================= */
+
+menu.nav-tiresias {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  margin: 0 14px 0 auto !important;
+  padding: 0 8px 0 14px !important;
+  border-left: 1px solid var(--tiresias-gold-dim) !important;
+}
+
+menu.nav-tiresias li {
+  list-style: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+menu.nav-tiresias a {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  font-weight: 500 !important;
+  font-size: 12px !important;
+  padding: 4px 8px !important;
+  border-radius: 3px !important;
+  color: var(--tiresias-accent) !important;
+  text-decoration: none !important;
+  transition: all var(--tiresias-transition-fast) !important;
+}
+
+menu.nav-tiresias a:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--tiresias-gold) !important;
+}
+
+/* ========================================================================= */
+/* Segmented Toggle for Board Privacy                                       */
+/* ========================================================================= */
+
+.tiresias-privacy-segment {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 6px !important;
+  background: rgba(0, 0, 0, 0.35) !important;
+  padding: 4px !important;
+  border-radius: var(--tiresias-radius-md) !important;
+  border: 1px solid var(--tiresias-border) !important;
+}
+
+.tiresias-privacy-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  border-radius: var(--tiresias-radius-sm) !important;
+  cursor: pointer !important;
+  transition: all var(--tiresias-transition-fast) !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: var(--tiresias-text-muted) !important;
+  outline: none !important;
+  user-select: none !important;
+}
+
+.tiresias-privacy-btn:hover:not(.active-private):not(.active-public) {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Active Private state: glowing green badge */
+.tiresias-privacy-btn.active-private {
+  background: #174229 !important;
+  border: 1.5px solid var(--tiresias-success) !important;
+  color: var(--tiresias-success-light) !important;
+  font-weight: bold !important;
+  box-shadow: 0 0 12px var(--tiresias-success-subtle), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Active Public state: glowing gold badge */
+.tiresias-privacy-btn.active-public {
+  background: #3e3214 !important;
+  border: 1.5px solid var(--tiresias-gold) !important;
+  color: var(--tiresias-gold-hover) !important;
+  font-weight: bold !important;
+  box-shadow: 0 0 12px var(--tiresias-gold-dim), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+/* ========================================================================= */
+/* Animations & Transitions                                                  */
+/* ========================================================================= */
+
+@keyframes tiresias-popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tiresias-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tiresias-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes tiresias-drawer-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes tiresias-toast-fadein {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes tiresias-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

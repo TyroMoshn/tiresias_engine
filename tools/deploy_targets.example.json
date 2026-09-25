@@ -1,0 +1,37 @@
+{
+  "_comment": "Configuration file for tiresias automated updater and zero-downtime deployment (copy to deploy_targets.json)",
+  "local": {
+    "enabled": true,
+    "description": "Local development serving instance with hot-reload",
+    "type": "local",
+    "data_dir": "data",
+    "api_url": "http://127.0.0.1:8000",
+    "admin_key": "YOUR_ADMIN_SECRET_KEY_HERE"
+  },
+  "laptop_testbed": {
+    "enabled": false,
+    "description": "Remote Linux Lite laptop testbed with atomic zero-downtime hot-reload",
+    "type": "ssh",
+    "host": "laptop",
+    "user": "developer",
+    "remote_data_dir": "/opt/tiresias/data",
+    "service_name": "tiresias",
+    "restart_service": false,
+    "atomic": true,
+    "api_url": "http://192.168.1.150:8000",
+    "admin_key": "YOUR_ADMIN_SECRET_KEY_HERE"
+  },
+  "remote_vps_example": {
+    "enabled": false,
+    "description": "Production Linux serving node (SSH) with zero-downtime hot-reload",
+    "type": "ssh",
+    "host": "api.tiresias.example.com",
+    "user": "deploy",
+    "remote_data_dir": "/opt/tiresias/data",
+    "service_name": "tiresias",
+    "restart_service": false,
+    "atomic": true,
+    "api_url": "https://api.tiresias.example.com",
+    "admin_key": "YOUR_ADMIN_SECRET_KEY_HERE"
+  }
+}

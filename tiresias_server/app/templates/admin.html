@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tiresias Admin Console</title>
+  <style>
+    :root {
+      --bg-base: #0b0f19;
+      --bg-surface: #111827;
+      --bg-card: #1e293b;
+      --bg-card-hover: #273549;
+      --border-subtle: #334155;
+      --border-focus: #6366f1;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --teal: #14b8a6;
+      --teal-hover: #0d9488;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --rose: #ef4444;
+      --rose-hover: #dc2626;
+      --indigo: #4338ca;
+      --purple: #8b5cf6;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation */
+    header {
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--teal));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 900;
+      font-size: 16px;
+    }
+
+    .brand-badge {
+      font-size: 11px;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      background: rgba(99, 102, 241, 0.2);
+      color: #a5b4fc;
+      border-radius: 12px;
+      border: 1px solid rgba(99, 102, 241, 0.4);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .pulse-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--emerald);
+      box-shadow: 0 0 8px var(--emerald);
+    }
+
+    .dot.maintenance {
+      background-color: var(--amber);
+      box-shadow: 0 0 8px var(--amber);
+    }
+
+    .dot.error {
+      background-color: var(--rose);
+      box-shadow: 0 0 8px var(--rose);
+    }
+
+    /* Tabs Navigation */
+    .tabs-bar {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0 24px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      padding: 14px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease-in-out;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      color: #818cf8;
+      border-bottom-color: var(--primary);
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      padding: 24px;
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Grid & Cards */
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-value {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .card-subtext {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    /* Meter / Progress Bar */
+    .progress-track {
+      background: rgba(255, 255, 255, 0.08);
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--teal), var(--primary));
+      transition: width 0.3s ease;
+    }
+
+    .progress-fill.warn {
+      background: linear-gradient(90deg, var(--amber), #f97316);
+    }
+
+    .progress-fill.danger {
+      background: linear-gradient(90deg, #f97316, var(--rose));
+    }
+
+    /* Section Header */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-card-hover);
+      color: var(--text-main);
+      border-color: var(--border-subtle);
+    }
+    .btn-secondary:hover {
+      background-color: #334155;
+    }
+
+    .btn-danger {
+      background-color: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    .btn-danger:hover {
+      background-color: var(--rose);
+      color: #fff;
+    }
+
+    .btn-warning {
+      background-color: rgba(245, 158, 11, 0.15);
+      color: #fde68a;
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+    .btn-warning:hover {
+      background-color: var(--amber);
+      color: #000;
+    }
+
+    .btn-teal {
+      background-color: rgba(20, 184, 166, 0.15);
+      color: #5eead4;
+      border-color: rgba(20, 184, 166, 0.3);
+    }
+    .btn-teal:hover {
+      background-color: var(--teal);
+      color: #fff;
+    }
+
+    /* Forms & Inputs */
+    .input-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="number"],
+    select {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      color: var(--text-main);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+    }
+
+    /* Table Styles */
+    .table-container {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      margin-bottom: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th {
+      background-color: rgba(17, 24, 39, 0.8);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+      font-size: 13px;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-admin { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .badge-moderator { background: rgba(245, 158, 11, 0.2); color: #fde68a; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .badge-tester { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.4); }
+    .badge-user { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4); }
+    .badge-guest { background: rgba(100, 116, 139, 0.2); color: #cbd5e1; border: 1px solid rgba(100, 116, 139, 0.4); }
+
+    .badge-source {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-dialog {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 480px;
+      padding: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      transform: scale(0.95);
+      transition: transform 0.2s ease;
+    }
+
+    .modal-backdrop.open .modal-dialog {
+      transform: scale(1);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .modal-body {
+      margin: 16px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    /* Toast */
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 200;
+    }
+
+    .toast {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 12px 18px;
+      color: var(--text-main);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      min-width: 280px;
+      animation: slideIn 0.2s ease;
+    }
+
+    .toast.success { border-left: 4px solid var(--emerald); }
+    .toast.error { border-left: 4px solid var(--rose); }
+    .toast.info { border-left: 4px solid var(--primary); }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .mono {
+      font-family: var(--font-mono);
+    }
+
+    .key-value-list {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .key-label {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .val-text {
+      color: var(--text-main);
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">T</div>
+      <span>TIRESIAS</span>
+      <span class="brand-badge">ADMIN</span>
+    </div>
+    <div class="header-actions">
+      <div class="pulse-indicator">
+        <span class="dot" id="system-dot"></span>
+        <span id="system-status-text">Connecting...</span>
+      </div>
+      <button class="btn btn-secondary btn-sm" id="btn-refresh" onclick="refreshActiveTab()">
+        <span>↻</span> Refresh (<span id="refresh-countdown">10</span>s)
+      </button>
+      <button class="btn btn-secondary btn-sm" id="btn-auth-action" onclick="toggleAuthModal()">
+        Lock / Logout
+      </button>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <div class="tabs-bar">
+    <button class="tab-btn active" onclick="switchTab('tab-telemetry')">
+      <span>📊</span> Telemetry & System
+    </button>
+    <button class="tab-btn" onclick="switchTab('tab-users')">
+      <span>👥</span> Users & Accounts
+    </button>
+    <button class="tab-btn" onclick="switchTab('tab-invites')">
+      <span>🎟️</span> Invite Whitelist
+    </button>
+    <button class="tab-btn" onclick="switchTab('tab-diagnostics')">
+      <span>🩺</span> Diagnostics & Audit
+    </button>
+  </div>
+
+  <main>
+    <!-- TAB 1: Telemetry & System -->
+    <section id="tab-telemetry" class="tab-content active">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">System Status & Live Telemetry</h2>
+          <p class="section-desc">Host resource consumption, recommendation engine state, and SQLite volume metrics.</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-warning" id="btn-maintenance-toggle" onclick="toggleMaintenanceMode()">
+            Toggle Maintenance Mode
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Stats Grid -->
+      <div class="grid-4">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Host CPU</span>
+            <span class="card-subtext" id="cpu-core-count">-- cores</span>
+          </div>
+          <div class="card-value" id="cpu-val">--%</div>
+          <div class="progress-track">
+            <div class="progress-fill" id="cpu-bar" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Host RAM</span>
+            <span class="card-subtext" id="mem-usage-sub">-- / -- GB</span>
+          </div>
+          <div class="card-value" id="mem-val">--%</div>
+          <div class="progress-track">
+            <div class="progress-fill" id="mem-bar" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Process RSS</span>
+            <span class="card-subtext">Engine Memory</span>
+          </div>
+          <div class="card-value" id="proc-val">-- MB</div>
+          <div class="card-subtext" id="proc-sub">Uptime: --</div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Disk Free</span>
+            <span class="card-subtext" id="disk-path">Volume</span>
+          </div>
+          <div class="card-value" id="disk-val">-- GB</div>
+          <div class="progress-track">
+            <div class="progress-fill" id="disk-bar" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Breakdown -->
+      <div class="grid-2">
+        <!-- Engine Status Card -->
+        <div class="card">
+          <h3 style="font-size: 15px; margin-bottom: 16px; font-weight: 600;">Recommendation Engine Runtime</h3>
+          <div class="key-value-list">
+            <span class="key-label">Active Profile:</span>
+            <span class="val-text mono" id="eng-profile">--</span>
+
+            <span class="key-label">Engine Status:</span>
+            <span class="val-text" id="eng-status">--</span>
+
+            <span class="key-label">Indexed Posts:</span>
+            <span class="val-text mono" id="eng-posts">--</span>
+
+            <span class="key-label">FAISS SQ8:</span>
+            <span class="val-text mono" id="eng-faiss">--</span>
+
+            <span class="key-label">Candidate Budgets:</span>
+            <span class="val-text mono" id="eng-budgets">--</span>
+
+            <span class="key-label">Archetypes:</span>
+            <span class="val-text mono" id="eng-collab">--</span>
+
+            <span class="key-label">Sanity Status:</span>
+            <span class="val-text" id="eng-sanity">--</span>
+          </div>
+        </div>
+
+        <!-- Database & Storage Card -->
+        <div class="card">
+          <h3 style="font-size: 15px; margin-bottom: 16px; font-weight: 600;">Database & Persistent Records</h3>
+          <div class="key-value-list">
+            <span class="key-label">tiresias_user.db:</span>
+            <span class="val-text mono" id="db-user-size">-- MB</span>
+
+            <span class="key-label">telemetry.db:</span>
+            <span class="val-text mono" id="db-telem-size">-- MB</span>
+
+            <span class="key-label">Registered Users:</span>
+            <span class="val-text mono" id="db-users-count">--</span>
+
+            <span class="key-label">Feedback Events:</span>
+            <span class="val-text mono" id="db-feedback-count">--</span>
+
+            <span class="key-label">Boards Created:</span>
+            <span class="val-text mono" id="db-boards-count">--</span>
+
+            <span class="key-label">Invited Users:</span>
+            <span class="val-text mono" id="db-invites-count">--</span>
+
+            <span class="key-label">Active Tokens:</span>
+            <span class="val-text mono" id="db-tokens-count">--</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: Users Management -->
+    <section id="tab-users" class="tab-content">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">User Account Management</h2>
+          <p class="section-desc">Inspect, manage user authorization roles, reset credentials, or cascade deletions.</p>
+        </div>
+        <div class="input-group">
+          <input type="text" id="user-search-input" placeholder="Search ID or name..." onkeyup="if(event.key==='Enter') searchUsers()">
+          <select id="user-role-filter" onchange="searchUsers()">
+            <option value="">All Roles</option>
+            <option value="0">Guest (0)</option>
+            <option value="10">User (10)</option>
+            <option value="20">Tester (20)</option>
+            <option value="50">Moderator (50)</option>
+            <option value="100">Admin (100)</option>
+          </select>
+          <button class="btn btn-primary" onclick="searchUsers()">Search</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Username</th>
+              <th>Display Name</th>
+              <th>Role</th>
+              <th>Source</th>
+              <th>Password</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-table-body">
+            <tr><td colspan="8" style="text-align: center; color: var(--text-dim);">Loading users...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <span id="users-page-info">Showing 0 of 0 users</span>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-secondary btn-sm" id="btn-users-prev" onclick="prevUserPage()">Previous</button>
+          <button class="btn btn-secondary btn-sm" id="btn-users-next" onclick="nextUserPage()">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: Invite Whitelist -->
+    <section id="tab-invites" class="tab-content">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Invite Whitelist (Closed Beta)</h2>
+          <p class="section-desc">Manage site user IDs authorized to access the system during restricted registration.</p>
+        </div>
+        <button class="btn btn-teal" onclick="openAddInviteModal()">+ Add User ID</button>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Site User ID</th>
+              <th>Username</th>
+              <th>Added At</th>
+              <th>Note</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="invites-table-body">
+            <tr><td colspan="5" style="text-align: center; color: var(--text-dim);">Loading whitelist...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 4: Diagnostics & Audit -->
+    <section id="tab-diagnostics" class="tab-content">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Diagnostics & System Audit</h2>
+          <p class="section-desc">Hardware sanity checks, vector database health, memory mapping verification.</p>
+        </div>
+        <button class="btn btn-primary" id="btn-run-diag" onclick="runDiagnosticsAudit()">
+          ⚡ Run Fresh Audit
+        </button>
+      </div>
+
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="card-header">
+          <span class="card-title">Diagnostic Summary</span>
+          <span class="badge" id="diag-badge-status">HEALTHY</span>
+        </div>
+        <div id="diag-warnings-container" style="margin-top: 12px;">
+          <p style="color: var(--text-muted);">No warnings reported.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 15px; margin-bottom: 12px; font-weight: 600;">Raw Diagnostic Audit JSON</h3>
+        <pre class="mono" id="diag-raw-json" style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: 8px; overflow-x: auto; max-height: 400px; font-size: 12px; color: #cbd5e1;">Loading audit...</pre>
+      </div>
+    </section>
+  </main>
+
+  <!-- AUTH LOGIN MODAL -->
+  <div class="modal-backdrop" id="modal-auth">
+    <div class="modal-dialog">
+      <h3 class="modal-title">Admin Authentication</h3>
+      <p style="font-size: 13px; color: var(--text-muted);" id="auth-modal-msg">
+        Enter your Bearer Token or Master Admin Key to access the administration console.
+      </p>
+      <div class="modal-body">
+        <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Admin Secret / Bearer Token</label>
+        <input type="password" id="auth-token-input" placeholder="Bearer token or Master Key" onkeyup="if(event.key==='Enter') submitAuth()">
+        <label style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+          <input type="checkbox" id="auth-remember" checked> Remember in this browser
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="submitAuth()">Authenticate</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROLE CHANGE MODAL -->
+  <div class="modal-backdrop" id="modal-role">
+    <div class="modal-dialog">
+      <h3 class="modal-title">Update User Role</h3>
+      <p style="font-size: 13px; color: var(--text-muted);">Select the new privilege level for user <strong id="role-target-user-id" class="mono">--</strong>.</p>
+      <div class="modal-body">
+        <select id="role-select" style="width: 100%;">
+          <option value="0">0 - GUEST (Unauthenticated / restricted)</option>
+          <option value="10">10 - USER (Standard profile & recommendations)</option>
+          <option value="20">20 - TESTER (Multi-sandbox & test controls)</option>
+          <option value="50">50 - MODERATOR (Reserved for curation)</option>
+          <option value="100">100 - ADMIN (Full system access & telemetry)</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-role')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitRoleChange()">Save Role</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASSWORD RESET MODAL -->
+  <div class="modal-backdrop" id="modal-password">
+    <div class="modal-dialog">
+      <h3 class="modal-title">Reset User Password</h3>
+      <p style="font-size: 13px; color: var(--text-muted);">Set a new password for user <strong id="pw-target-user-id" class="mono">--</strong>.</p>
+      <div class="modal-body">
+        <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">New Password (min 4 characters)</label>
+        <input type="password" id="pw-new-input" placeholder="Enter new password">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-password')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitPasswordReset()">Update Password</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM DELETE MODAL -->
+  <div class="modal-backdrop" id="modal-delete">
+    <div class="modal-dialog">
+      <h3 class="modal-title" style="color: var(--rose);">Delete User Account?</h3>
+      <p style="font-size: 13px; color: var(--text-muted);">
+        Are you sure you want to delete user <strong id="del-target-user-id" class="mono">--</strong>?
+      </p>
+      <p style="font-size: 12px; color: #fca5a5; background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 6px; margin-top: 10px;">
+        ⚠️ This action is irreversible. All feedback, seen history, boards, sub-profiles, and active tokens will be permanently erased.
+      </p>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-delete')">Cancel</button>
+        <button class="btn btn-danger" onclick="submitUserDelete()">Delete Account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD INVITE MODAL -->
+  <div class="modal-backdrop" id="modal-invite">
+    <div class="modal-dialog">
+      <h3 class="modal-title">Add Whitelist User</h3>
+      <p style="font-size: 13px; color: var(--text-muted);">Allow an e621 site user ID to register during closed beta.</p>
+      <div class="modal-body">
+        <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Site User ID (Numeric)</label>
+        <input type="number" id="inv-id-input" placeholder="e.g. 123456">
+        <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Username (Optional)</label>
+        <input type="text" id="inv-user-input" placeholder="e.g. FoxAdmin">
+        <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Note / Reason</label>
+        <input type="text" id="inv-note-input" placeholder="e.g. Beta tester invite">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-invite')">Cancel</button>
+        <button class="btn btn-teal" onclick="submitAddInvite()">Add to Whitelist</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toasts -->
+  <div id="toast-container"></div>
+
+  <script>
+    // State & Constants
+    const TOKEN_KEY = "tiresias_admin_token";
+    let currentUserPage = 1;
+    const userPageSize = 25;
+    let refreshInterval = null;
+    let refreshCountdown = 10;
+    let activeTabId = "tab-telemetry";
+    let currentMaintenance = false;
+
+    // Selected Targets for Modals
+    let targetUserId = null;
+
+    function getToken() {
+      return localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY) || "";
+    }
+
+    function setToken(tok, persistent) {
+      if (persistent) {
+        localStorage.setItem(TOKEN_KEY, tok);
+      } else {
+        sessionStorage.setItem(TOKEN_KEY, tok);
+      }
+    }
+
+    function clearToken() {
+      localStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(TOKEN_KEY);
+    }
+
+    // Toast Notifications
+    function showToast(message, type = "info") {
+      const container = document.getElementById("toast-container");
+      const el = document.createElement("div");
+      el.className = `toast ${type}`;
+      el.textContent = message;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 300);
+      }, 3500);
+    }
+
+    // Modal Control
+    function openModal(id) {
+      document.getElementById(id).classList.add("open");
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove("open");
+    }
+
+    function toggleAuthModal(msg) {
+      if (msg) document.getElementById("auth-modal-msg").textContent = msg;
+      openModal("modal-auth");
+      document.getElementById("auth-token-input").focus();
+    }
+
+    function submitAuth() {
+      const val = document.getElementById("auth-token-input").value.trim();
+      const remember = document.getElementById("auth-remember").checked;
+      if (!val) {
+        showToast("Please enter an admin token or master key", "error");
+        return;
+      }
+      setToken(val, remember);
+      closeModal("modal-auth");
+      showToast("Authentication token saved", "success");
+      refreshActiveTab();
+    }
+
+    // Authenticated API Fetch
+    async function apiFetch(url, options = {}) {
+      const token = getToken();
+      if (!token) {
+        toggleAuthModal("Admin token required. Please sign in.");
+        throw new Error("Unauthenticated");
+      }
+
+      const headers = {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+        "X-Admin-Key": token,
+        ...(options.headers || {})
+      };
+
+      try {
+        const res = await fetch(url, { ...options, headers });
+        if (res.status === 401 || res.status === 403) {
+          toggleAuthModal("Session expired or unauthorized (401/403). Enter valid token.");
+          throw new Error("Unauthorized");
+        }
+        if (!res.ok) {
+          let errText = `${res.status} ${res.statusText}`;
+          try {
+            const errJson = await res.json();
+            if (errJson.detail) errText = errJson.detail;
+          } catch (_) {}
+          throw new Error(errText);
+        }
+        return await res.json();
+      } catch (err) {
+        if (err.message !== "Unauthenticated" && err.message !== "Unauthorized") {
+          showToast(err.message, "error");
+        }
+        throw err;
+      }
+    }
+
+    // Tab Management
+    function switchTab(tabId) {
+      activeTabId = tabId;
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+
+      const targetBtn = Array.from(document.querySelectorAll(".tab-btn")).find(b => b.getAttribute("onclick")?.includes(tabId));
+      if (targetBtn) targetBtn.classList.add("active");
+      document.getElementById(tabId).classList.add("active");
+
+      refreshActiveTab();
+    }
+
+    function refreshActiveTab() {
+      resetCountdown();
+      if (activeTabId === "tab-telemetry") {
+        fetchTelemetry();
+      } else if (activeTabId === "tab-users") {
+        fetchUsers();
+      } else if (activeTabId === "tab-invites") {
+        fetchInvites();
+      } else if (activeTabId === "tab-diagnostics") {
+        fetchDiagnostics();
+      }
+    }
+
+    // 1. Telemetry Loader
+    async function fetchTelemetry() {
+      try {
+        const data = await apiFetch("/api/v1/admin/system/stats");
+
+        // Update dot status
+        const dot = document.getElementById("system-dot");
+        const statusText = document.getElementById("system-status-text");
+        currentMaintenance = data.engine?.maintenance || false;
+
+        if (currentMaintenance) {
+          dot.className = "dot maintenance";
+          statusText.textContent = "Maintenance Mode";
+          document.getElementById("btn-maintenance-toggle").textContent = "Disable Maintenance Mode";
+          document.getElementById("btn-maintenance-toggle").className = "btn btn-teal";
+        } else {
+          dot.className = "dot";
+          statusText.textContent = "Online";
+          document.getElementById("btn-maintenance-toggle").textContent = "Enable Maintenance Mode";
+          document.getElementById("btn-maintenance-toggle").className = "btn btn-warning";
+        }
+
+        // Host CPU
+        const cpuPct = data.cpu_percent ?? 0;
+        document.getElementById("cpu-val").textContent = `${cpuPct.toFixed(1)}%`;
+        document.getElementById("cpu-core-count").textContent = `${data.cpu_count || 1} cores`;
+        const cpuBar = document.getElementById("cpu-bar");
+        cpuBar.style.width = `${Math.min(100, Math.max(0, cpuPct))}%`;
+        cpuBar.className = "progress-fill" + (cpuPct > 85 ? " danger" : cpuPct > 65 ? " warn" : "");
+
+        // Host RAM
+        const memPct = data.memory_percent ?? 0;
+        document.getElementById("mem-val").textContent = `${memPct.toFixed(1)}%`;
+        const usedGb = ((data.memory_used_mb || 0) / 1024).toFixed(1);
+        const totalGb = ((data.memory_total_mb || 0) / 1024).toFixed(1);
+        document.getElementById("mem-usage-sub").textContent = `${usedGb} / ${totalGb} GB`;
+        const memBar = document.getElementById("mem-bar");
+        memBar.style.width = `${Math.min(100, Math.max(0, memPct))}%`;
+        memBar.className = "progress-fill" + (memPct > 85 ? " danger" : memPct > 70 ? " warn" : "");
+
+        // Process RSS
+        document.getElementById("proc-val").textContent = `${data.process_rss_mb?.toFixed(1) || 0} MB`;
+        const uptimeSec = data.engine?.uptime_seconds || 0;
+        const uptimeFmt = uptimeSec > 3600 ? `${(uptimeSec / 3600).toFixed(1)} hrs` : `${Math.floor(uptimeSec / 60)} mins`;
+        document.getElementById("proc-sub").textContent = `Uptime: ${uptimeFmt}`;
+
+        // Disk Free
+        document.getElementById("disk-val").textContent = `${data.disk_free_gb?.toFixed(1) || 0} GB`;
+        document.getElementById("disk-path").textContent = data.disk_path || "Volume";
+        const diskPct = data.disk_percent ?? 0;
+        const diskBar = document.getElementById("disk-bar");
+        diskBar.style.width = `${Math.min(100, Math.max(0, diskPct))}%`;
+        diskBar.className = "progress-fill" + (diskPct > 90 ? " danger" : diskPct > 75 ? " warn" : "");
+
+        // Engine Breakdown
+        document.getElementById("eng-profile").textContent = data.engine?.profile || "standard";
+        document.getElementById("eng-status").textContent = data.engine?.status || "online";
+        document.getElementById("eng-posts").textContent = Number(data.engine?.total_posts_indexed || 0).toLocaleString();
+        document.getElementById("eng-faiss").textContent = data.engine?.faiss_ready
+          ? `Ready (${Number(data.engine?.faiss_total_vectors || 0).toLocaleString()} vectors)`
+          : "Not loaded";
+        const b = data.engine?.candidate_budget || {};
+        document.getElementById("eng-budgets").textContent = `FAISS: ${b.faiss_top_k || 0}, Collab: ${b.collab_top_k || 0}, Max: ${b.max_candidates || 0}`;
+        document.getElementById("eng-collab").textContent = `${data.engine?.collab_archetypes_loaded || 0} archetypes, ${data.engine?.collab_centroids_loaded || 0} centroids`;
+        document.getElementById("eng-sanity").textContent = data.engine?.diagnostics_status || "healthy";
+
+        // DB Files & Row Counts
+        document.getElementById("db-user-size").textContent = `${data.db_user_size_mb || 0} MB`;
+        document.getElementById("db-telem-size").textContent = `${data.db_telemetry_size_mb || 0} MB`;
+        const r = data.db_rows || {};
+        document.getElementById("db-users-count").textContent = Number(r.users || 0).toLocaleString();
+        document.getElementById("db-feedback-count").textContent = Number(r.user_feedback || 0).toLocaleString();
+        document.getElementById("db-boards-count").textContent = Number(r.user_boards || r.boards || 0).toLocaleString();
+        document.getElementById("db-invites-count").textContent = Number(r.allowed_invites || 0).toLocaleString();
+        document.getElementById("db-tokens-count").textContent = Number(r.auth_tokens || 0).toLocaleString();
+
+      } catch (e) {
+        document.getElementById("system-dot").className = "dot error";
+        document.getElementById("system-status-text").textContent = "Disconnected";
+      }
+    }
+
+    async function toggleMaintenanceMode() {
+      const nextState = !currentMaintenance;
+      try {
+        const res = await apiFetch("/api/v1/admin/system/maintenance", {
+          method: "POST",
+          body: JSON.stringify({ maintenance: nextState })
+        });
+        showToast(res.message || "Maintenance mode updated", "success");
+        fetchTelemetry();
+      } catch (_) {}
+    }
+
+    // 2. Users Loader & Actions
+    function searchUsers() {
+      currentUserPage = 1;
+      fetchUsers();
+    }
+
+    function prevUserPage() {
+      if (currentUserPage > 1) {
+        currentUserPage--;
+        fetchUsers();
+      }
+    }
+
+    function nextUserPage() {
+      currentUserPage++;
+      fetchUsers();
+    }
+
+    async function fetchUsers() {
+      const tbody = document.getElementById("users-table-body");
+      const search = document.getElementById("user-search-input").value.trim();
+      const roleFilter = document.getElementById("user-role-filter").value;
+
+      let url = `/api/v1/admin/users?page=${currentUserPage}&page_size=${userPageSize}`;
+      if (search) url += `&search=${encodeURIComponent(search)}`;
+      if (roleFilter !== "") url += `&role=${encodeURIComponent(roleFilter)}`;
+
+      try {
+        const data = await apiFetch(url);
+        tbody.innerHTML = "";
+
+        if (!data.users || data.users.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-dim);">No users found.</td></tr>`;
+          document.getElementById("users-page-info").textContent = "0 of 0 users";
+          return;
+        }
+
+        data.users.forEach(u => {
+          const tr = document.createElement("tr");
+
+          // Role Badge Class
+          let roleName = "User";
+          let badgeClass = "badge-user";
+          if (u.role >= 100) { roleName = "Admin"; badgeClass = "badge-admin"; }
+          else if (u.role >= 50) { roleName = "Moderator"; badgeClass = "badge-moderator"; }
+          else if (u.role >= 20) { roleName = "Tester"; badgeClass = "badge-tester"; }
+          else if (u.role <= 0) { roleName = "Guest"; badgeClass = "badge-guest"; }
+
+          const createdDate = u.created_at ? new Date(u.created_at * 1000).toLocaleString() : "-";
+
+          tr.innerHTML = `
+            <td class="mono" style="font-weight: 600;">${escapeHtml(u.user_id)}</td>
+            <td>${escapeHtml(u.username || "-")}</td>
+            <td>${escapeHtml(u.display_name || "-")}</td>
+            <td><span class="badge ${badgeClass}">${roleName} (${u.role})</span></td>
+            <td><span class="badge badge-source">${escapeHtml(u.site_source || "direct")}</span></td>
+            <td>${u.has_password ? "🔒 Yes" : "— No"}</td>
+            <td style="color: var(--text-muted); font-size: 12px;">${createdDate}</td>
+            <td>
+              <div style="display: flex; gap: 6px;">
+                <button class="btn btn-secondary btn-sm" onclick="openRoleModal('${escapeHtml(u.user_id)}', ${u.role})">Role</button>
+                <button class="btn btn-secondary btn-sm" onclick="openPasswordModal('${escapeHtml(u.user_id)}')">Password</button>
+                <button class="btn btn-danger btn-sm" onclick="openDeleteModal('${escapeHtml(u.user_id)}')">Delete</button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        const totalPages = Math.ceil(data.total / userPageSize) || 1;
+        document.getElementById("users-page-info").textContent = `Page ${data.page} of ${totalPages} (Total: ${data.total})`;
+        document.getElementById("btn-users-prev").disabled = data.page <= 1;
+        document.getElementById("btn-users-next").disabled = data.page >= totalPages;
+
+      } catch (_) {}
+    }
+
+    function openRoleModal(uid, currentRole) {
+      targetUserId = uid;
+      document.getElementById("role-target-user-id").textContent = uid;
+      document.getElementById("role-select").value = String(currentRole);
+      openModal("modal-role");
+    }
+
+    async function submitRoleChange() {
+      const newRole = parseInt(document.getElementById("role-select").value, 10);
+      try {
+        const res = await apiFetch(`/api/v1/admin/users/${encodeURIComponent(targetUserId)}/role`, {
+          method: "POST",
+          body: JSON.stringify({ role: newRole })
+        });
+        showToast(`Role updated to ${newRole} for ${targetUserId}`, "success");
+        closeModal("modal-role");
+        fetchUsers();
+      } catch (_) {}
+    }
+
+    function openPasswordModal(uid) {
+      targetUserId = uid;
+      document.getElementById("pw-target-user-id").textContent = uid;
+      document.getElementById("pw-new-input").value = "";
+      openModal("modal-password");
+    }
+
+    async function submitPasswordReset() {
+      const pw = document.getElementById("pw-new-input").value;
+      if (!pw || pw.length < 4) {
+        showToast("Password must be at least 4 characters", "error");
+        return;
+      }
+      try {
+        await apiFetch(`/api/v1/admin/users/${encodeURIComponent(targetUserId)}/password`, {
+          method: "POST",
+          body: JSON.stringify({ password: pw })
+        });
+        showToast(`Password updated for user ${targetUserId}`, "success");
+        closeModal("modal-password");
+      } catch (_) {}
+    }
+
+    function openDeleteModal(uid) {
+      targetUserId = uid;
+      document.getElementById("del-target-user-id").textContent = uid;
+      openModal("modal-delete");
+    }
+
+    async function submitUserDelete() {
+      try {
+        await apiFetch(`/api/v1/admin/users/${encodeURIComponent(targetUserId)}`, {
+          method: "DELETE"
+        });
+        showToast(`User ${targetUserId} deleted`, "success");
+        closeModal("modal-delete");
+        fetchUsers();
+      } catch (_) {}
+    }
+
+    // 3. Invites Loader & Actions
+    async function fetchInvites() {
+      const tbody = document.getElementById("invites-table-body");
+      try {
+        const invites = await apiFetch("/api/v1/admin/invites");
+        tbody.innerHTML = "";
+
+        if (!invites || invites.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-dim);">No invited users on whitelist.</td></tr>`;
+          return;
+        }
+
+        invites.forEach(inv => {
+          const tr = document.createElement("tr");
+          const dateStr = inv.created_at ? new Date(inv.created_at * 1000).toLocaleString() : "-";
+          tr.innerHTML = `
+            <td class="mono" style="font-weight: 600;">${inv.site_user_id}</td>
+            <td>${escapeHtml(inv.username || "-")}</td>
+            <td style="color: var(--text-muted); font-size: 12px;">${dateStr}</td>
+            <td style="color: var(--text-muted);">${escapeHtml(inv.note || "-")}</td>
+            <td>
+              <button class="btn btn-danger btn-sm" onclick="removeInvite(${inv.site_user_id})">Remove</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (_) {}
+    }
+
+    function openAddInviteModal() {
+      document.getElementById("inv-id-input").value = "";
+      document.getElementById("inv-user-input").value = "";
+      document.getElementById("inv-note-input").value = "";
+      openModal("modal-invite");
+    }
+
+    async function submitAddInvite() {
+      const siteId = parseInt(document.getElementById("inv-id-input").value, 10);
+      const username = document.getElementById("inv-user-input").value.trim();
+      const note = document.getElementById("inv-note-input").value.trim();
+
+      if (!siteId || isNaN(siteId)) {
+        showToast("Valid site user ID is required", "error");
+        return;
+      }
+
+      try {
+        await apiFetch("/api/v1/admin/invites", {
+          method: "POST",
+          body: JSON.stringify({ site_user_id: siteId, username, note })
+        });
+        showToast(`User ${siteId} added to whitelist`, "success");
+        closeModal("modal-invite");
+        fetchInvites();
+      } catch (_) {}
+    }
+
+    async function removeInvite(siteUserId) {
+      if (!confirm(`Remove site user ID ${siteUserId} from whitelist?`)) return;
+      try {
+        await apiFetch(`/api/v1/admin/invites/${siteUserId}`, { method: "DELETE" });
+        showToast(`User ${siteUserId} removed from whitelist`, "success");
+        fetchInvites();
+      } catch (_) {}
+    }
+
+    // 4. Diagnostics & Audit
+    async function fetchDiagnostics() {
+      try {
+        const diag = await apiFetch("/api/v1/system/diagnostics");
+        renderDiagnostics(diag);
+      } catch (_) {}
+    }
+
+    async function runDiagnosticsAudit() {
+      const btn = document.getElementById("btn-run-diag");
+      btn.disabled = true;
+      btn.textContent = "⚡ Running Audit...";
+      try {
+        const res = await apiFetch("/api/v1/system/diagnostics/run", { method: "POST" });
+        showToast("Diagnostics audit completed", "success");
+        renderDiagnostics(res);
+      } catch (_) {
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "⚡ Run Fresh Audit";
+      }
+    }
+
+    function renderDiagnostics(diag) {
+      const badge = document.getElementById("diag-badge-status");
+      const status = (diag.status || "healthy").toUpperCase();
+      badge.textContent = status;
+      badge.className = "badge " + (status === "HEALTHY" ? "badge-admin" : status === "WARNING" ? "badge-moderator" : "badge-guest");
+
+      const warnContainer = document.getElementById("diag-warnings-container");
+      const warnings = diag.warnings || [];
+      if (warnings.length > 0) {
+        warnContainer.innerHTML = warnings.map(w => `
+          <div style="background: rgba(245, 158, 11, 0.1); border-left: 3px solid var(--amber); padding: 8px 12px; margin-bottom: 6px; border-radius: 4px; font-size: 13px; color: #fde68a;">
+            ⚠️ ${escapeHtml(w)}
+          </div>
+        `).join("");
+      } else {
+        warnContainer.innerHTML = `<p style="color: var(--emerald); font-size: 13px;">✓ All system checks passed cleanly without warnings.</p>`;
+      }
+
+      document.getElementById("diag-raw-json").textContent = JSON.stringify(diag, null, 2);
+    }
+
+    // Utilities
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function resetCountdown() {
+      refreshCountdown = 10;
+      document.getElementById("refresh-countdown").textContent = refreshCountdown;
+    }
+
+    // Global Auto-refresh Timer
+    function startAutoRefresh() {
+      if (refreshInterval) clearInterval(refreshInterval);
+      refreshInterval = setInterval(() => {
+        refreshCountdown--;
+        if (refreshCountdown <= 0) {
+          refreshActiveTab();
+        } else {
+          document.getElementById("refresh-countdown").textContent = refreshCountdown;
+        }
+      }, 1000);
+    }
+
+    // Initialization
+    window.addEventListener("DOMContentLoaded", () => {
+      startAutoRefresh();
+      // If no token exists, open login modal immediately
+      if (!getToken()) {
+        toggleAuthModal("Admin token required. Please sign in.");
+      } else {
+        refreshActiveTab();
+      }
+    });
+  </script>
+</body>
+</html>

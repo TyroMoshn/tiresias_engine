@@ -1,0 +1,14 @@
+# Web Framework & ASGI
+fastapi>=0.110.0
+uvicorn>=0.28.0
+pydantic>=2.6.0
+
+# Scientific, ML & Vector Indexing
+numpy>=1.26.0
+faiss-cpu>=1.9.0
+pyroaring>=1.0.3
+polars-runtime-compat>=1.35.0
+
+# System, Async HTTP & Monitoring
+psutil>=5.9.0
+httpx>=0.27.0

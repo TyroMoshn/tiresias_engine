@@ -1,0 +1,45 @@
+services:
+  tiresias:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: tiresias-server:latest
+    container_name: tiresias_recommender
+    restart: unless-stopped
+    expose:
+      - "8000"
+    environment:
+      - TIRESIAS_PROFILE=${TIRESIAS_PROFILE:-performance}
+      - TIRESIAS_HOST=0.0.0.0
+      - TIRESIAS_PORT=8000
+      - TIRESIAS_FAISS_THREADS=${TIRESIAS_FAISS_THREADS:-0}
+    volumes:
+      # Read-only serving dataset (mmaps, bitmaps, features, tags.parquet)
+      - ${TIRESIAS_DATA_DIR:-./data}:/app/data:ro
+      # Read-write SQLite storage for user signals, bookmarks, and boards
+      - ${TIRESIAS_DB_DIR:-./db}:/app/db:rw
+    # Optional resource limits (uncomment or set via compose override when deploying to low-spec VPS)
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: ${TIRESIAS_MEM_LIMIT:-2G}
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: tiresias_proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - TIRESIAS_DOMAIN=${TIRESIAS_DOMAIN:-localhost}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - tiresias
+
+volumes:
+  caddy_data:
+  caddy_config:

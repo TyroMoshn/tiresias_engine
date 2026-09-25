@@ -1,0 +1,2432 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "TIRESIAS_ENGINE Serving API",
+    "description": "High-performance recommendation backend for Pinterest-like image boards.",
+    "version": "0.3.0"
+  },
+  "paths": {
+    "/api/v1/recommend/feed": {
+      "post": {
+        "tags": [
+          "recommend"
+        ],
+        "summary": "Get Feed Post",
+        "operationId": "get_feed_post_api_v1_recommend_feed_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "recommend"
+        ],
+        "summary": "Get Feed Get",
+        "description": "GET version of /feed for easy testing in browser address bar.",
+        "operationId": "get_feed_get_api_v1_recommend_feed_get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "default_user",
+              "title": "User Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 30,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "min_score",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Min Score"
+            }
+          },
+          {
+            "name": "ratings",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ratings"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/recommend/similar": {
+      "post": {
+        "tags": [
+          "recommend"
+        ],
+        "summary": "Get Similar Post",
+        "operationId": "get_similar_post_api_v1_recommend_similar_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimilarRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimilarResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "recommend"
+        ],
+        "summary": "Get Similar Get",
+        "description": "GET version of /similar for easy testing in browser address bar.",
+        "operationId": "get_similar_get_api_v1_recommend_similar_get",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "description": "Target post ID to find similar posts for",
+              "title": "Post Id"
+            },
+            "description": "Target post ID to find similar posts for"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "ratings",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ratings"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimilarResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/feedback": {
+      "post": {
+        "tags": [
+          "feedback"
+        ],
+        "summary": "Submit Feedback",
+        "description": "Submits user feedback (like, dislike, hide, skip, save, etc.).",
+        "operationId": "submit_feedback_api_v1_feedback_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/feedback/seen": {
+      "post": {
+        "tags": [
+          "feedback"
+        ],
+        "summary": "Submit Seen",
+        "description": "Submits a batch of post IDs that have been displayed/seen by the user.\nEnables soft decay (x0.3) so user sees fresh content without permanent blocking.",
+        "operationId": "submit_seen_api_v1_feedback_seen_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SeenBatchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeenBatchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/settings/tag_blacklist": {
+      "get": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Get Tag Blacklist",
+        "operationId": "get_tag_blacklist_api_v1_settings_tag_blacklist_get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "default_user",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagBlacklistResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Add Tag Blacklist",
+        "operationId": "add_tag_blacklist_api_v1_settings_tag_blacklist_put",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagBlacklistRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagBlacklistResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Remove Tag Blacklist",
+        "operationId": "remove_tag_blacklist_api_v1_settings_tag_blacklist_delete",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagBlacklistRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagBlacklistResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/settings/preferences": {
+      "get": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Get Preferences",
+        "operationId": "get_preferences_api_v1_settings_preferences_get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "default_user",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreferencesResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Update Preferences",
+        "operationId": "update_preferences_api_v1_settings_preferences_put",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreferencesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreferencesResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/system/health": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Get Health",
+        "operationId": "get_health_api_v1_system_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/system/stats": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Get Stats",
+        "operationId": "get_stats_api_v1_system_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Get Stats Api V1 System Stats Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/boards": {
+      "post": {
+        "tags": [
+          "boards"
+        ],
+        "summary": "Create Board",
+        "description": "Creates a new board for a user.",
+        "operationId": "create_board_api_v1_boards_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoardCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "boards"
+        ],
+        "summary": "List Boards",
+        "description": "Lists all boards belonging to a user, ordered by last updated.",
+        "operationId": "list_boards_api_v1_boards_get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "default_user",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BoardSummary"
+                  },
+                  "title": "Response List Boards Api V1 Boards Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/boards/{board_id}": {
+      "get": {
+        "tags": [
+          "boards"
+        ],
+        "summary": "Get Board",
+        "description": "Returns complete board details, salient theme tags, and hydrated posts\nsorted according to the requested criteria (including semantic affinity to board centroid).",
+        "operationId": "get_board_api_v1_boards__board_id__get",
+        "parameters": [
+          {
+            "name": "board_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Board Id"
+            }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Sort by: 'added_at', 'epoch_day', 'score', 'fav_count', 'affinity'",
+              "default": "added_at",
+              "title": "Sort By"
+            },
+            "description": "Sort by: 'added_at', 'epoch_day', 'score', 'fav_count', 'affinity'"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Sort order: 'desc' or 'asc'",
+              "default": "desc",
+              "title": "Order"
+            },
+            "description": "Sort order: 'desc' or 'asc'"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "boards"
+        ],
+        "summary": "Update Board",
+        "description": "Updates board title, description, or cover image.",
+        "operationId": "update_board_api_v1_boards__board_id__patch",
+        "parameters": [
+          {
+            "name": "board_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Board Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoardUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "boards"
+        ],
+        "summary": "Delete Board",
+        "description": "Deletes a board and cascades removal of all post associations.",
+        "operationId": "delete_board_api_v1_boards__board_id__delete",
+        "parameters": [
+          {
+            "name": "board_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Board Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Delete Board Api V1 Boards  Board Id  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/boards/{board_id}/posts": {
+      "post": {
+        "tags": [
+          "boards"
+        ],
+        "summary": "Add Posts To Board",
+        "description": "Adds one or more post IDs to the board.",
+        "operationId": "add_posts_to_board_api_v1_boards__board_id__posts_post",
+        "parameters": [
+          {
+            "name": "board_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Board Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoardPostsAddRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardPostsAddResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/boards/{board_id}/posts/{post_id}": {
+      "delete": {
+        "tags": [
+          "boards"
+        ],
+        "summary": "Remove Post From Board",
+        "description": "Removes a specific post from the board.",
+        "operationId": "remove_post_from_board_api_v1_boards__board_id__posts__post_id__delete",
+        "parameters": [
+          {
+            "name": "board_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Board Id"
+            }
+          },
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Post Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Remove Post From Board Api V1 Boards  Board Id  Posts  Post Id  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/boards/{board_id}/recommend": {
+      "post": {
+        "tags": [
+          "boards"
+        ],
+        "summary": "Recommend For Board Post",
+        "description": "Generates recommendations matching the collective aesthetic of the board (POST method).\nGuarantees hard exclusion of all posts already in the board.",
+        "operationId": "recommend_for_board_post_api_v1_boards__board_id__recommend_post",
+        "parameters": [
+          {
+            "name": "board_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Board Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoardRecommendRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardRecommendResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "boards"
+        ],
+        "summary": "Recommend For Board Get",
+        "description": "Generates recommendations matching the collective aesthetic of the board (GET method).\nConvenient for direct browser URL navigation and testing.",
+        "operationId": "recommend_for_board_get_api_v1_boards__board_id__recommend_get",
+        "parameters": [
+          {
+            "name": "board_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Board Id"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "default_user",
+              "title": "User Id"
+            }
+          },
+          {
+            "name": "ratings",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated list, e.g. 's,q'",
+              "default": "s,q",
+              "title": "Ratings"
+            },
+            "description": "Comma-separated list, e.g. 's,q'"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 30,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "min_score",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Min Score"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardRecommendResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/boards/{board_id}/export": {
+      "get": {
+        "tags": [
+          "boards"
+        ],
+        "summary": "Export Board",
+        "description": "Exports board metadata and post IDs as a standalone portable JSON.",
+        "operationId": "export_board_api_v1_boards__board_id__export_get",
+        "parameters": [
+          {
+            "name": "board_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Board Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardExportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/boards/import": {
+      "post": {
+        "tags": [
+          "boards"
+        ],
+        "summary": "Import Board",
+        "description": "Imports a board from a JSON payload into the specified user's profile.",
+        "operationId": "import_board_api_v1_boards_import_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoardImportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "root"
+        ],
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BoardCoverage": {
+        "properties": {
+          "total_posts": {
+            "type": "integer",
+            "title": "Total Posts",
+            "default": 0
+          },
+          "indexed_posts": {
+            "type": "integer",
+            "title": "Indexed Posts",
+            "default": 0
+          },
+          "coverage_ratio": {
+            "type": "number",
+            "title": "Coverage Ratio",
+            "default": 0.0
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "sufficient"
+          },
+          "warning_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Warning Message"
+          }
+        },
+        "type": "object",
+        "title": "BoardCoverage"
+      },
+      "BoardCreateRequest": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id",
+            "default": "default_user"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Description",
+            "default": ""
+          },
+          "cover_post_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cover Post Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "BoardCreateRequest"
+      },
+      "BoardDetailResponse": {
+        "properties": {
+          "board_id": {
+            "type": "string",
+            "title": "Board Id"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "cover_post_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cover Post Id"
+          },
+          "post_count": {
+            "type": "integer",
+            "title": "Post Count"
+          },
+          "created_at": {
+            "type": "number",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "number",
+            "title": "Updated At"
+          },
+          "salient_tags": {
+            "items": {
+              "$ref": "#/components/schemas/SalientTagItem"
+            },
+            "type": "array",
+            "title": "Salient Tags"
+          },
+          "posts": {
+            "items": {
+              "$ref": "#/components/schemas/BoardPostItem"
+            },
+            "type": "array",
+            "title": "Posts"
+          },
+          "coverage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BoardCoverage"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit",
+            "default": 50
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset",
+            "default": 0
+          },
+          "sort_by": {
+            "type": "string",
+            "title": "Sort By",
+            "default": "added_at"
+          },
+          "order": {
+            "type": "string",
+            "title": "Order",
+            "default": "desc"
+          }
+        },
+        "type": "object",
+        "required": [
+          "board_id",
+          "user_id",
+          "name",
+          "post_count",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "BoardDetailResponse"
+      },
+      "BoardExportResponse": {
+        "properties": {
+          "board_id": {
+            "type": "string",
+            "title": "Board Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "created_at": {
+            "type": "number",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "number",
+            "title": "Updated At"
+          },
+          "cover_post_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cover Post Id"
+          },
+          "post_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Post Ids"
+          },
+          "exported_at": {
+            "type": "number",
+            "title": "Exported At"
+          },
+          "engine_version": {
+            "type": "string",
+            "title": "Engine Version",
+            "default": "1.0.0"
+          }
+        },
+        "type": "object",
+        "required": [
+          "board_id",
+          "name",
+          "created_at",
+          "updated_at",
+          "post_ids",
+          "exported_at"
+        ],
+        "title": "BoardExportResponse"
+      },
+      "BoardImportRequest": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id",
+            "default": "default_user"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "post_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Post Ids"
+          },
+          "cover_post_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cover Post Id"
+          }
+        },
+        "type": "object",
+        "title": "BoardImportRequest"
+      },
+      "BoardPostItem": {
+        "properties": {
+          "post_id": {
+            "type": "integer",
+            "title": "Post Id"
+          },
+          "added_at": {
+            "type": "number",
+            "title": "Added At"
+          },
+          "score": {
+            "type": "integer",
+            "title": "Score",
+            "default": 0
+          },
+          "fav_count": {
+            "type": "integer",
+            "title": "Fav Count",
+            "default": 0
+          },
+          "epoch_day": {
+            "type": "integer",
+            "title": "Epoch Day",
+            "default": 0
+          },
+          "rating": {
+            "type": "string",
+            "title": "Rating",
+            "default": "s"
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width",
+            "default": 0
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height",
+            "default": 0
+          },
+          "affinity": {
+            "type": "number",
+            "title": "Affinity",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "post_id",
+          "added_at"
+        ],
+        "title": "BoardPostItem"
+      },
+      "BoardPostsAddRequest": {
+        "properties": {
+          "post_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Post Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "post_ids"
+        ],
+        "title": "BoardPostsAddRequest"
+      },
+      "BoardPostsAddResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success",
+            "default": true
+          },
+          "board_id": {
+            "type": "string",
+            "title": "Board Id"
+          },
+          "added_count": {
+            "type": "integer",
+            "title": "Added Count"
+          },
+          "total_post_count": {
+            "type": "integer",
+            "title": "Total Post Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "board_id",
+          "added_count",
+          "total_post_count"
+        ],
+        "title": "BoardPostsAddResponse"
+      },
+      "BoardRecommendItem": {
+        "properties": {
+          "post_id": {
+            "type": "integer",
+            "title": "Post Id"
+          },
+          "score": {
+            "type": "number",
+            "title": "Score"
+          },
+          "similarity": {
+            "type": "number",
+            "title": "Similarity"
+          },
+          "score_val": {
+            "type": "integer",
+            "title": "Score Val",
+            "default": 0
+          },
+          "fav_count": {
+            "type": "integer",
+            "title": "Fav Count",
+            "default": 0
+          },
+          "rating": {
+            "type": "string",
+            "title": "Rating",
+            "default": "s"
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width",
+            "default": 0
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "post_id",
+          "score",
+          "similarity"
+        ],
+        "title": "BoardRecommendItem"
+      },
+      "BoardRecommendRequest": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id",
+            "default": "default_user"
+          },
+          "ratings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Ratings"
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "default": 30
+          },
+          "min_score": {
+            "type": "integer",
+            "title": "Min Score",
+            "default": 0
+          },
+          "exclude_tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exclude Tags"
+          }
+        },
+        "type": "object",
+        "title": "BoardRecommendRequest"
+      },
+      "BoardRecommendResponse": {
+        "properties": {
+          "board_id": {
+            "type": "string",
+            "title": "Board Id"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/BoardRecommendItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total_candidates": {
+            "type": "integer",
+            "title": "Total Candidates",
+            "default": 0
+          },
+          "filtered_pool_size": {
+            "type": "integer",
+            "title": "Filtered Pool Size",
+            "default": 0
+          },
+          "returned_count": {
+            "type": "integer",
+            "title": "Returned Count",
+            "default": 0
+          },
+          "coverage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BoardCoverage"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "latency_ms": {
+            "type": "number",
+            "title": "Latency Ms",
+            "default": 0.0
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "board_id"
+        ],
+        "title": "BoardRecommendResponse"
+      },
+      "BoardSummary": {
+        "properties": {
+          "board_id": {
+            "type": "string",
+            "title": "Board Id"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "cover_post_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cover Post Id"
+          },
+          "post_count": {
+            "type": "integer",
+            "title": "Post Count",
+            "default": 0
+          },
+          "created_at": {
+            "type": "number",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "number",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "board_id",
+          "user_id",
+          "name",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "BoardSummary"
+      },
+      "BoardUpdateRequest": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "cover_post_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cover Post Id"
+          }
+        },
+        "type": "object",
+        "title": "BoardUpdateRequest"
+      },
+      "FeedItem": {
+        "properties": {
+          "post_id": {
+            "type": "integer",
+            "title": "Post Id"
+          },
+          "score": {
+            "type": "number",
+            "title": "Score"
+          },
+          "score_val": {
+            "type": "integer",
+            "title": "Score Val",
+            "default": 0
+          },
+          "fav_count": {
+            "type": "integer",
+            "title": "Fav Count",
+            "default": 0
+          },
+          "rating": {
+            "type": "string",
+            "title": "Rating",
+            "default": "s"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reasons"
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width",
+            "default": 0
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "post_id",
+          "score"
+        ],
+        "title": "FeedItem"
+      },
+      "FeedRequest": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id",
+            "default": "default_user"
+          },
+          "ratings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Ratings"
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "default": 30
+          },
+          "cursor": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Cursor",
+            "default": 0
+          },
+          "min_score": {
+            "type": "integer",
+            "title": "Min Score",
+            "default": 0
+          },
+          "exclude_tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exclude Tags"
+          }
+        },
+        "type": "object",
+        "title": "FeedRequest"
+      },
+      "FeedResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/FeedItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total_candidates": {
+            "type": "integer",
+            "title": "Total Candidates"
+          },
+          "filtered_pool_size": {
+            "type": "integer",
+            "title": "Filtered Pool Size"
+          },
+          "returned_count": {
+            "type": "integer",
+            "title": "Returned Count"
+          },
+          "cursor": {
+            "type": "integer",
+            "title": "Cursor"
+          },
+          "has_more": {
+            "type": "boolean",
+            "title": "Has More"
+          },
+          "latency_ms": {
+            "type": "number",
+            "title": "Latency Ms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total_candidates",
+          "filtered_pool_size",
+          "returned_count",
+          "cursor",
+          "has_more",
+          "latency_ms"
+        ],
+        "title": "FeedResponse"
+      },
+      "FeedbackRequest": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id",
+            "default": "default_user"
+          },
+          "post_id": {
+            "type": "integer",
+            "title": "Post Id"
+          },
+          "signal_type": {
+            "type": "string",
+            "title": "Signal Type",
+            "description": "Signal type: 'like', 'dislike', 'hide', 'skip', 'save', etc.",
+            "default": "like"
+          }
+        },
+        "type": "object",
+        "required": [
+          "post_id"
+        ],
+        "title": "FeedbackRequest"
+      },
+      "FeedbackResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success",
+            "default": true
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "post_id": {
+            "type": "integer",
+            "title": "Post Id"
+          },
+          "signal_type": {
+            "type": "string",
+            "title": "Signal Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "post_id",
+          "signal_type"
+        ],
+        "title": "FeedbackResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "uptime_seconds": {
+            "type": "number",
+            "title": "Uptime Seconds"
+          },
+          "memory_rss_mb": {
+            "type": "number",
+            "title": "Memory Rss Mb"
+          },
+          "total_posts_indexed": {
+            "type": "integer",
+            "title": "Total Posts Indexed"
+          },
+          "faiss_ready": {
+            "type": "boolean",
+            "title": "Faiss Ready"
+          },
+          "faiss_total_vectors": {
+            "type": "integer",
+            "title": "Faiss Total Vectors"
+          },
+          "collab_archetypes_loaded": {
+            "type": "integer",
+            "title": "Collab Archetypes Loaded"
+          },
+          "collab_centroids_loaded": {
+            "type": "integer",
+            "title": "Collab Centroids Loaded"
+          },
+          "database_path": {
+            "type": "string",
+            "title": "Database Path"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "uptime_seconds",
+          "memory_rss_mb",
+          "total_posts_indexed",
+          "faiss_ready",
+          "faiss_total_vectors",
+          "collab_archetypes_loaded",
+          "collab_centroids_loaded",
+          "database_path"
+        ],
+        "title": "HealthResponse"
+      },
+      "PreferencesRequest": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id",
+            "default": "default_user"
+          },
+          "preferences": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Preferences"
+          }
+        },
+        "type": "object",
+        "required": [
+          "preferences"
+        ],
+        "title": "PreferencesRequest"
+      },
+      "PreferencesResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "preferences": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Preferences"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "preferences"
+        ],
+        "title": "PreferencesResponse"
+      },
+      "SalientTagItem": {
+        "properties": {
+          "tag": {
+            "type": "string",
+            "title": "Tag"
+          },
+          "score": {
+            "type": "number",
+            "title": "Score"
+          },
+          "tf": {
+            "type": "number",
+            "title": "Tf"
+          },
+          "idf": {
+            "type": "number",
+            "title": "Idf"
+          },
+          "category": {
+            "type": "integer",
+            "title": "Category",
+            "default": 0
+          },
+          "post_count": {
+            "type": "integer",
+            "title": "Post Count",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "tag",
+          "score",
+          "tf",
+          "idf"
+        ],
+        "title": "SalientTagItem"
+      },
+      "SeenBatchRequest": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id",
+            "default": "default_user"
+          },
+          "post_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Post Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "post_ids"
+        ],
+        "title": "SeenBatchRequest"
+      },
+      "SeenBatchResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success",
+            "default": true
+          },
+          "recorded_count": {
+            "type": "integer",
+            "title": "Recorded Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "recorded_count"
+        ],
+        "title": "SeenBatchResponse"
+      },
+      "SimilarItem": {
+        "properties": {
+          "post_id": {
+            "type": "integer",
+            "title": "Post Id"
+          },
+          "similarity": {
+            "type": "number",
+            "title": "Similarity"
+          },
+          "score": {
+            "type": "integer",
+            "title": "Score",
+            "default": 0
+          },
+          "fav_count": {
+            "type": "integer",
+            "title": "Fav Count",
+            "default": 0
+          },
+          "rating": {
+            "type": "string",
+            "title": "Rating",
+            "default": "s"
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width",
+            "default": 0
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "post_id",
+          "similarity"
+        ],
+        "title": "SimilarItem"
+      },
+      "SimilarRequest": {
+        "properties": {
+          "post_id": {
+            "type": "integer",
+            "title": "Post Id"
+          },
+          "ratings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Ratings"
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 50.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "default": 20
+          }
+        },
+        "type": "object",
+        "required": [
+          "post_id"
+        ],
+        "title": "SimilarRequest"
+      },
+      "SimilarResponse": {
+        "properties": {
+          "query_post_id": {
+            "type": "integer",
+            "title": "Query Post Id"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SimilarItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "returned_count": {
+            "type": "integer",
+            "title": "Returned Count"
+          },
+          "latency_ms": {
+            "type": "number",
+            "title": "Latency Ms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query_post_id",
+          "items",
+          "returned_count",
+          "latency_ms"
+        ],
+        "title": "SimilarResponse"
+      },
+      "TagBlacklistRequest": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id",
+            "default": "default_user"
+          },
+          "tag_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Tag Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tag_ids"
+        ],
+        "title": "TagBlacklistRequest"
+      },
+      "TagBlacklistResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "blacklisted_tag_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Blacklisted Tag Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "blacklisted_tag_ids"
+        ],
+        "title": "TagBlacklistResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

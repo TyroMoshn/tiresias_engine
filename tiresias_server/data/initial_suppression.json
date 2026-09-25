@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0",
+  "description": "Initial tag suppression rules for cold-start profiles. Weights range from 0.0 (no suppression) to 1.0 (hard ban in recommendations).",
+  "settings": {
+    "likes_to_unsuppress": 5,
+    "soft_penalty_multiplier": 0.8
+  },
+  "tags": {}
+}

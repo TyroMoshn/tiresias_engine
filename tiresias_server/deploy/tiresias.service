@@ -1,0 +1,28 @@
+[Unit]
+Description=TIRESIAS Recommendation Serving API
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/tyro/tiresias/tiresias_server
+ExecStartPre=-/home/tyro/tiresias/tiresias_server/deploy/notify_status.sh started 8000 "5.16M vectors" eco
+ExecStart=/home/tyro/tiresias/venv/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+ExecStopPost=-/home/tyro/tiresias/tiresias_server/deploy/notify_status.sh stopped
+Restart=always
+RestartSec=3
+
+Environment="TIRESIAS_PROFILE=eco"
+Environment="TIRESIAS_ROOT=/home/tyro/tiresias"
+Environment="TIRESIAS_DATA_ROOT=/home/tyro/tiresias/data"
+Environment="TIRESIAS_FAISS_THREADS=2"
+Environment="PYTHONPATH=/home/tyro/tiresias/tiresias_server:/home/tyro/tiresias"
+Environment="DISPLAY=:0"
+Environment="DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus"
+Environment="XAUTHORITY=/home/tyro/.Xauthority"
+
+# Memory containment: prevents process from spilling into slow 5400 RPM HDD swap
+MemoryMax=1.1G
+MemorySwapMax=100M
+
+[Install]
+WantedBy=default.target

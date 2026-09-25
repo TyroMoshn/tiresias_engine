@@ -1,0 +1,90 @@
+# ==============================================================================
+# TIRESIAS Repository .gitignore
+# Clean Blacklist Strategy
+# ==============================================================================
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.ruff_cache/
+venv/
+.venv/
+env/
+*.egg-info/
+build/
+dist/
+
+# Node / WXT extension artifacts
+node_modules/
+.output/
+.wxt/
+.pnpm-store/
+
+# Confidential configurations & secrets
+.env
+.env.*
+!.env.example
+tools/deploy_targets.json
+!tools/deploy_targets.example.json
+tools/temp/
+temp/
+
+# OS / Editor system files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Logs and archives
+*.log
+backups/
+*.bak
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.gz
+*.rar
+*.7z
+
+# Databases and WAL journal files
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# Heavy Booru catalog dataset artifacts
+data/*.csv
+data/*.parquet
+data/*.bin
+data/*.roar
+data/*.roarpack
+data/*.topk
+data/*.topkpack
+data/*.index
+data/*.npy
+data/**/*.csv
+data/**/*.parquet
+data/**/*.bin
+data/**/*.roar
+data/**/*.roarpack
+data/**/*.topk
+data/**/*.topkpack
+data/**/*.index
+data/**/*.npy
+
+# Heavy dataset directories
+data/posts_parquet/
+data/post_tags_parquet/
+data/pools_parquet/
+data/features/
+data/mmaps/
+data/bitmaps/
+data/topk/
+data/backups/
+
+# Keep directory marker
+!data/.gitkeep
